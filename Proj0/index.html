@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 0: Images of the Russian River - CS180</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .section p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .image-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .image-item {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .image-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .image-item img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .image-item h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+        }
+        
+        .image-item .caption {
+            color: #666;
+            font-style: italic;
+            line-height: 1.4;
+        }
+        
+        .dolly-zoom {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .dolly-zoom video {
+            max-width: 100%;
+            width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .single-image {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .single-image img {
+            max-width: 100%;
+            width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .analysis {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .analysis h3 {
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+        
+        @media (max-width: 768px) {
+            .image-comparison {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-link">← Back to Portfolio</a>
+            <h1>Project 0: Images of the Russian River</h1>
+            <div class="subtitle">Understanding Perspective, Focal Length, and the Dolly Zoom Effect</div>
+        </div>
+        
+        <div class="content">
+            <!-- Introduction -->
+            <div class="section">
+                <p>In this project, I explored the relationship between perspective, focal length, and distance to understand how these factors affect the appearance of photographs. Through hands-on experimentation with portrait photography, street scenes, and the classic dolly zoom effect, I gained intuitive understanding of fundamental camera concepts.</p>
+            </div>
+            
+            <!-- Part 1: Portrait Photography -->
+            <div class="section">
+                <h2>Part 1: Portrait Photography - Close vs. Distant</h2>
+                <p>The first part of this assignment involved taking two portraits: one close-up selfie-style shot, and another from several feet back with zoom to match the face size. The results demonstrate how distance and focal length affect facial proportions and overall image quality.</p>
+                
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="./media/DSC_2231.JPG" alt="24mm" loading="lazy">
+                        <h3>Close-up Shot</h3>
+                        <div class="caption">Taken from close distance, showing typical selfie distortion with exaggerated facial features and wide-angle perspective effects.</div>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/DSC_2233.JPG" alt="35mm" loading="lazy">
+                        <h3>Distant Shot with Zoom</h3>
+                        <div class="caption">Taken from several feet away with zoom, resulting in more natural facial proportions and a more flattering perspective.</div>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/DSC_2237.JPG" alt="50mm" loading="lazy">
+                        <h3>Close-up Shot</h3>
+                        <div class="caption">Taken from close distance, showing typical selfie distortion with exaggerated facial features and wide-angle perspective effects.</div>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/DSC_2238.JPG" alt="70mm" loading="lazy">
+                        <h3>Distant Shot with Zoom</h3>
+                        <div class="caption">Taken from several feet away with zoom, resulting in more natural facial proportions and a more flattering perspective.</div>
+                    </div>
+                </div>
+                
+                <div class="analysis">
+                    <h3>Analysis</h3>
+                    <p>The distant shot with zoom produces a much more flattering portrait because:</p>
+                    <ul>
+                        <li><strong>Perspective distortion is minimized:</strong> When shooting close-up, features nearest to the camera (like the nose) appear disproportionately large.</li>
+                        <li><strong>More natural proportions:</strong> The longer focal length compresses the depth, making facial features appear more balanced.</li>
+                        <li><strong>Better depth of field:</strong> The longer focal length can provide better background separation and more professional-looking results.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Part 2: Urban Scene -->
+            <div class="section">
+                <h2>Part 2: Urban Scene - Compression Effects</h2>
+                <p>For the second part, I photographed a street scene in two ways: first with zoom from a distance, then walking closer and shooting without zoom to match the scene size. This demonstrates the compression effects of different focal lengths.</p>
+                
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="./media/DSC_2237.JPG" alt="Street scene with zoom" loading="lazy">
+                        <h3>Zoomed Shot from Distance</h3>
+                        <div class="caption">Shot with zoom from far away, creating a compressed, flattened perspective that brings background elements closer visually.</div>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/DSC_2238.JPG" alt="Street scene up close" loading="lazy">
+                        <h3>Wide Shot from Closer</h3>
+                        <div class="caption">Shot from closer without zoom, showing more natural depth and separation between foreground and background elements.</div>
+                    </div>
+                </div>
+                
+                <div class="analysis">
+                    <h3>Analysis</h3>
+                    <p>The zoomed shot appears more compressed because:</p>
+                    <ul>
+                        <li><strong>Telephoto compression:</strong> Longer focal lengths compress the apparent distance between objects at different depths.</li>
+                        <li><strong>Reduced perspective cues:</strong> The narrow field of view eliminates many depth cues that help us perceive distance.</li>
+                        <li><strong>Background magnification:</strong> Distant objects appear larger relative to foreground elements, making the scene feel "flatter".</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Part 3: Dolly Zoom -->
+            <div class="section">
+                <h2>Part 3: The Dolly Zoom Effect</h2>
+                <p>The dolly zoom, also known as the "Vertigo shot," is created by simultaneously moving the camera away from the subject while zooming in (or vice versa). This keeps the main subject the same size while dramatically changing the background perspective, creating a disorienting and cinematic effect.</p>
+                
+                <div class="dolly-zoom">
+                    <video controls autoplay muted loop>
+                        <source src="./media/Sequence01.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="caption" style="margin-top: 15px; font-style: italic; color: #666;">
+                        Dolly zoom sequence showing the dramatic perspective shift as the camera moves back while zooming in.
+                    </div>
+                </div>
+                
+                <div class="analysis">
+                    <h3>The Science Behind the Dolly Zoom</h3>
+                    <p>This effect works because:</p>
+                    <ul>
+                        <li><strong>Focal length changes perspective:</strong> As we zoom in, the background appears to move closer due to telephoto compression.</li>
+                        <li><strong>Distance maintains subject size:</strong> Moving the camera back compensates for the zoom, keeping the main subject the same apparent size.</li>
+                        <li><strong>Background transformation:</strong> The background undergoes dramatic changes in apparent depth and size, creating the signature disorienting effect.</li>
+                        <li><strong>Psychological impact:</strong> This unnatural perspective change creates tension and unease, which is why it's often used in thriller and horror films.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Conclusion -->
+            <div class="section">
+                <h2>Conclusion</h2>
+                <p>Through this project, I gained hands-on understanding of how camera distance, focal length, and zoom interact to create different visual effects. These concepts are fundamental to photography and cinematography, affecting everything from portrait flattery to dramatic storytelling techniques. The dolly zoom effect perfectly demonstrates how technical camera operations can create powerful psychological and artistic impacts.</p>
+                <p>This foundation in understanding perspective and focal length will be crucial as we move forward in the course to more complex topics in computer vision and computational photography.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
