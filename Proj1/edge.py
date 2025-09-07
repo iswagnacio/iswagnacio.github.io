@@ -32,6 +32,38 @@ def sobel(image):
     
     return magnitude
 
+def measure_true_offset(original_channel, aligned_channel, search_range=50):
+    best_score = -1
+    true_offset = (0, 0)
+
+    h, w = original_channel.shape
+    margin = min(h, w) // 10
+    orig_subset = original_channel[margin:-margin, margin:-margin]
+    
+    for dx in range(-search_range, search_range + 1):
+        for dy in range(-search_range, search_range + 1):
+
+            test_channel = np.roll(aligned_channel, dx, axis=1)
+            test_channel = np.roll(test_channel, dy, axis=0)
+            test_subset = test_channel[margin:-margin, margin:-margin]
+
+            orig_flat = orig_subset.flatten()
+            test_flat = test_subset.flatten()
+            
+            orig_centered = orig_flat - np.mean(orig_flat)
+            test_centered = test_flat - np.mean(test_flat)
+            
+            numerator = np.dot(orig_centered, test_centered)
+            denominator = np.linalg.norm(orig_centered) * np.linalg.norm(test_centered)
+            
+            if denominator > 0:
+                score = numerator / denominator
+                if score > best_score:
+                    best_score = score
+                    true_offset = (dx, dy)
+    
+    return true_offset
+
 def align_with_edge(channel_to_align, reference_channel, search_range=15):
     ref_edges = sobel(reference_channel)
     channel_edges = sobel(channel_to_align)
@@ -69,7 +101,7 @@ def align_with_edge(channel_to_align, reference_channel, search_range=15):
     
     return best_displacement[0], best_displacement[1], aligned_channel
 
-def align_pyramid(channel_to_align, reference_channel, max_levels=7, base_search_range=25):
+def align_pyramid(channel_to_align, reference_channel, max_levels=5, base_search_range=15):
 
     ref_pyramid = [reference_channel]
     channel_pyramid = [channel_to_align]
@@ -126,18 +158,21 @@ def colorize_image(image_path):
     g_dx, g_dy, aligned_g = align_pyramid(g, b)
     r_dx, r_dy, aligned_r = align_pyramid(r, b)
 
+    true_g_offset = measure_true_offset(g, aligned_g)
+    true_r_offset = measure_true_offset(r, aligned_r)
+
     color_image = np.dstack([aligned_r, aligned_g, b])
     plt.figure(figsize=(12, 8))
     plt.imshow(color_image)
-    plt.title(f'Colorized Image\nG: ({g_dx}, {g_dy}), R: ({r_dx}, {r_dy})')
+    plt.title(f'Colorized Image\nG: ({true_g_offset}), R: ({true_r_offset})')
     plt.axis('off')
     plt.show()
 
-    return color_image, (g_dx, g_dy), (r_dx, r_dy)
+    return color_image, r_dx, r_dy, r_dx, r_dy
 
 if __name__ == "__main__":
     #small_image = '/Users/junwei/Fall2025/CS180/cs180 proj1 data/tobolsk.jpg'
     #result_small = colorize_image(small_image)
 
-    large_image = '/Users/junwei/Fall2025/CS180/cs180 proj1 data/church.tif'
+    large_image = '/Users/junwei/Fall2025/CS180/cs180 proj1 data/siren.tif'
     result_large = colorize_image(large_image)

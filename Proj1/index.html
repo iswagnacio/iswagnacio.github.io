@@ -1,15 +1,272 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Proj1</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 0</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+        
+        .container {
+            /* max-width: 1000px; */
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .section p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .image-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .image-item {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .image-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .image-item img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .image-item h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+        }
+        
+        .image-item .caption {
+            color: #666;
+            font-style: italic;
+            line-height: 1.4;
+        }
+        
+        .dolly-zoom {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .dolly-zoom video {
+            max-width: 100%;
+            width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .single-image {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .single-image img {
+            max-width: 100%;
+            width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .analysis {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .analysis h3 {
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+        
+        @media (max-width: 768px) {
+            .image-comparison {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Proj1</h1>
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-link">← Back to Portfolio</a>
+            <h1>Project 1</h1>
+            <div class="subtitle">Images of the Russian Empire: Colorizing the Prokudin-Gorskii photo collection</div>
+        </div>
+        
+        <div class="content">
+            
+            <!-- Part 1-->
+            <div class="section">
+                <h2>Example Results</h2>
+                <p>Edge Detection + NCC on provided images</p>
+                
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="./media/cathedral.png" alt="G: (-2, -5), R: (-3, -12)" loading="lazy">
+                        <h3>G: (-2, -5), R: (-3, -12)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/monastery.png" alt="G: (-2, 3), R: (-2, -3)" loading="lazy">
+                        <h3>G: (-2, 3), R: (-2, -3)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/tobolsk.png" alt="G: (-3, -3), R: (-3, -6)" loading="lazy">
+                        <h3>G: (-3, -3), R: (-3, -6)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/church.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h3>G: (-4, -25), R: (4, 50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/emir.png" alt="G: (-24, -49), R: (-40, -50)" loading="lazy">
+                        <h3>G: (-24, -49), R: (-40, -50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/harvesters.png" alt="G: (-17, -50), R: (-13, -50)" loading="lazy">
+                        <h3>G: (-17, -50), R: (-13, -50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/icon.png" alt="G: (-17, -42), R: (-23, -50)" loading="lazy">
+                        <h3>G: (-17, -42), R: (-23, -50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/italil.png" alt="G: (-22, -38), R: (-35, -50)" loading="lazy">
+                        <h3>G: (-22, -38), R: (-35, -50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/lastochikino.png" alt="G: (2, 3), R: (8, -50)" loading="lazy">
+                        <h3>G: (2, 3), R: (8, -50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/lugano.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h3>G: (17, -41), R: (29, -50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/melons.png" alt="G: (-10, -50), R: (-16, -50)" loading="lazy">
+                        <h3>G: (-10, -50), R: (-16, -50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/self_portrait.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h3>G: (-27, -50), R: (-39, -50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/siren.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h3>G: (6, -49), R: (27, -50)</h3>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/three_generations.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h3>G: (-12, -50), R: (-7, -50)</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Part 2: Prokudin-Gorskii collection -->
+            <div class="section">
+                <h2>Part 2: Prokudin-Gorskii Collection Results</h2>
+                <p>Edge Detection + NCC on selected images from Prokudin-Gorskii collection</p>
+                
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="./media/00170a.png" loading="lazy">
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/00210a.png" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
