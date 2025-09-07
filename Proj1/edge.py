@@ -135,5 +135,5 @@ def colorize_image(image_path):
     return color_image, r_dx, r_dy, r_dx, r_dy
 
 if __name__ == "__main__":
-    image = '/Users/junwei/Fall2025/CS180/cs180 proj1 data/three_generations.tif'
+    image = '/Users/junwei/Fall2025/CS180/cs180 proj1 data/harvesters.tif'
     result = colorize_image(image)
