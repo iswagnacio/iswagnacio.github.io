@@ -103,19 +103,18 @@
         
         .image-comparison {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 30px 0;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
         }
         
         .image-item {
             text-align: center;
             background: #f8f9fa;
-            padding: 20px;
+            padding: 5px; /* Remove all padding */
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
+        }   
         
         .image-item:hover {
             transform: translateY(-5px);
@@ -125,22 +124,23 @@
             width: 100%;
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 10px 10px 0 0; /* Only round top corners since text is below */
+            margin-bottom: 0px; /* Remove all margin */
+            box-shadow: none; /* Remove image shadow since container has shadow */
         }
         
         .image-item h4 {
-            margin: 0 0 10px 0;
+            margin: 10px 5px 10px 5px; /* Add small margins only to text */
             color: #2c3e50;
-            font-size: 1.1em;
+            font-size: 1em; /* Smaller text */
+            font-weight: normal;
         }
         
         .image-item .caption {
             color: #666;
             font-style: italic;
             line-height: 1.4;
-            font-size: 0.9em;
+            font-size: 0.8em;
         }
         
         .algorithm-steps {
@@ -158,17 +158,6 @@
         .algorithm-steps li {
             margin-bottom: 10px;
             color: #555;
-        }
-        
-        .code-snippet {
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 20px 0;
         }
         
         .results-grid {
@@ -306,14 +295,16 @@
 
                 <h3>2. Sobel Edge Detection (bells and whistles)</h3>
                 <p>The Sobel operator detects edges by computing the gradient of image intensity at each pixel using convolution with two 3×3 kernels. Without edge detection, the simple pixel alignment works well on jpg files but fails on the high-res tif files.</p>
-                    <div class="image-item">
-                        <img src="./media/monastery_simple.png" alt="jpg without edge" loading="lazy">
-                        <h3>Pixel alignment with NCC on jpg</h3>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/emir_simple.png" alt="tif without edge" loading="lazy">
-                        <h3>Pixel alignment with NCC on tif</h3>
-                    </div>
+                    <div class="image-comparison">   
+                        <div class="image-item">
+                            <img src="./media/monastery_simple.png" alt="jpg without edge" loading="lazy">
+                            <h3>Pixel alignment with NCC on jpg</h3>
+                        </div>
+                        <div class="image-item">
+                            <img src="./media/emir_simple.png" alt="tif without edge" loading="lazy">
+                            <h3>Pixel alignment with NCC on tif</h3>
+                        </div>
+                    </div> 
                 <div class="algorithm-steps">
                     <h4>Sobel Operators</h4>
                     <p>The Sobel operators are defined as two 3×3 convolution kernels:</p>
@@ -374,60 +365,60 @@
                 <h2>Example Results</h2>
                 <div class="image-comparison">
                     <div class="image-item">
-                        <img src="./media/cathedral.png" alt="G: (-2, -5), R: (-3, -12)" loading="lazy">
-                        <h3>G: (-2, -5), R: (-3, -12)</h3>
+                        <img src="./media/cathedral.jpg" alt="G: (-2, -5), R: (-3, -12)" loading="lazy">
+                        <h4>G: (-2, -5), R: (-3, -12)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/monastery.png" alt="G: (-2, 3), R: (-2, -3)" loading="lazy">
-                        <h3>G: (-2, 3), R: (-2, -3)</h3>
+                        <img src="./media/monastery.jpg" alt="G: (-2, 3), R: (-2, -3)" loading="lazy">
+                        <h4>G: (-2, 3), R: (-2, -3)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/tobolsk.png" alt="G: (-3, -3), R: (-3, -6)" loading="lazy">
-                        <h3>G: (-3, -3), R: (-3, -6)</h3>
+                        <img src="./media/tobolsk.jpg" alt="G: (-3, -3), R: (-3, -6)" loading="lazy">
+                        <h4>G: (-3, -3), R: (-3, -6)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/church.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h3>G: (-4, -25), R: (4, 50)</h3>
+                        <img src="./media/church.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (-4, -25), R: (4, 50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/emir.png" alt="G: (-24, -49), R: (-40, -50)" loading="lazy">
-                        <h3>G: (-24, -49), R: (-40, -50)</h3>
+                        <img src="./media/emir.jpg" alt="G: (-24, -49), R: (-40, -50)" loading="lazy">
+                        <h4>G: (-24, -49), R: (-40, -50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/harvesters.png" alt="G: (-17, -50), R: (-13, -50)" loading="lazy">
-                        <h3>G: (-17, -50), R: (-13, -50)</h3>
+                        <img src="./media/harvesters.jpg" alt="G: (-17, -50), R: (-13, -50)" loading="lazy">
+                        <h4>G: (-17, -50), R: (-13, -50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/icon.png" alt="G: (-17, -42), R: (-23, -50)" loading="lazy">
-                        <h3>G: (-17, -42), R: (-23, -50)</h3>
+                        <img src="./media/icon.jpg" alt="G: (-17, -42), R: (-23, -50)" loading="lazy">
+                        <h4>G: (-17, -42), R: (-23, -50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/italil.png" alt="G: (-22, -38), R: (-35, -50)" loading="lazy">
-                        <h3>G: (-22, -38), R: (-35, -50)</h3>
+                        <img src="./media/italil.jpg" alt="G: (-22, -38), R: (-35, -50)" loading="lazy">
+                        <h4>G: (-22, -38), R: (-35, -50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/lastochikino.png" alt="G: (2, 3), R: (8, -50)" loading="lazy">
-                        <h3>G: (2, 3), R: (8, -50)</h3>
+                        <img src="./media/lastochikino.jpg" alt="G: (2, 3), R: (8, -50)" loading="lazy">
+                        <h4>G: (2, 3), R: (8, -50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/lugano.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h3>G: (17, -41), R: (29, -50)</h3>
+                        <img src="./media/lugano.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (17, -41), R: (29, -50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/melons.png" alt="G: (-10, -50), R: (-16, -50)" loading="lazy">
-                        <h3>G: (-10, -50), R: (-16, -50)</h3>
+                        <img src="./media/melons.jpg" alt="G: (-10, -50), R: (-16, -50)" loading="lazy">
+                        <h4>G: (-10, -50), R: (-16, -50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/self_portrait.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h3>G: (-27, -50), R: (-39, -50)</h3>
+                        <img src="./media/self_portrait.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (-27, -50), R: (-39, -50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/siren.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h3>G: (6, -49), R: (27, -50)</h3>
+                        <img src="./media/siren.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (6, -49), R: (27, -50)</h4>
                     </div>
                     <div class="image-item">
-                        <img src="./media/three_generations.png" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h3>G: (-12, -50), R: (-7, -50)</h3>
+                        <img src="./media/three_generations.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (-12, -50), R: (-7, -50)</h4>
                     </div>
                 </div>
             </div>
@@ -437,10 +428,10 @@
                 <h2>Part 2: Prokudin-Gorskii Collection Results</h2>
                 <div class="image-comparison">
                     <div class="image-item">
-                        <img src="./media/00170a.png" loading="lazy">
+                        <img src="./media/00170a.jpg" loading="lazy">
                     </div>
                     <div class="image-item">
-                        <img src="./media/00210a.png" loading="lazy">
+                        <img src="./media/00210a.jpg" loading="lazy">
                     </div>
                 </div>
             </div>
