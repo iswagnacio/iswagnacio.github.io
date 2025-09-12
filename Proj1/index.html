@@ -293,18 +293,112 @@
                     </ol>
                 </div>
 
-                <h3>2. Sobel Edge Detection (bells and whistles)</h3>
-                <p>The Sobel operator detects edges by computing the gradient of image intensity at each pixel using convolution with two 3×3 kernels. Without edge detection, the simple NCC pixel alignment works well on jpg files but fails on the high-res tif files.</p>
-                    <div class="image-comparison">   
+                <h3>2. Normalized Cross-Correlation (NCC)</h3>
+                <p>For alignment scoring, we use NCC which measures the correlation between pixels:</p>
+                <div class="algorithm-steps">
+                    <p><strong>NCC Formula:</strong> NCC(A,B) = Σ(A-Ā)(B-B̄) / (||A-Ā|| × ||B-B̄||)</p>
+                </div>
+                <div class="image-comparison">   
+                    <h4>Results from NCC (No edge detection & pyramid) on jpg and tif</h4>
                         <div class="image-item">
-                            <img src="./media/monastery_simple.png" alt="jpg without edge" loading="lazy">
-                            <h3>Pixel alignment with NCC on jpg</h3>
+                            <img src="./media/monastery_single.jpg" alt="jpg without edge" loading="lazy">
+                            <h4>G: (2, -3), R: (2, 3)</h4>
                         </div>
                         <div class="image-item">
-                            <img src="./media/emir_simple.png" alt="tif without edge" loading="lazy">
-                            <h3>Pixel alignment with NCC on tif</h3>
+                            <img src="./media/cathedral_single.jpg" alt="jpg without edge" loading="lazy">
+                            <h4>G: (2, 5), R: (3, 12)</h4>
                         </div>
-                    </div> 
+                        <div class="image-item">
+                            <img src="./media/tobolsk_single.jpg" alt="jpg without edge" loading="lazy">
+                            <h4>G: (3, 3), R: (3, 6)</h4>
+                        </div>
+                        <div class="image-item">
+                            <img src="./media/emir_single.jpg" alt="tif without edge" loading="lazy">
+                            <h4>G: (15, 15), R: (-4, 15)</h4>
+                            <h4>Takes a long time to run and bad result!</h4>
+                        </div>
+                </div> 
+
+                <h3>3. Multi-Scale Pyramid Alignment</h3>
+                <p>For high-resolution images, exhaustive search becomes computationally prohibitive. The pyramid approach provides an efficient solution:</p>
+                
+                <div class="algorithm-steps">
+                    <ol>
+                        <li><strong>Pyramid Construction:</strong> Create multiple resolution levels by iteratively downsampling by factor of 2</li>
+                        <li><strong>Coarse Alignment:</strong> Start with exhaustive search on the lowest resolution (≈25px minimum dimension)</li>
+                        <li><strong>Refinement:</strong> For each higher resolution level:
+                            <ul>
+                                <li>Scale up the displacement from previous level (×2)</li>
+                                <li>Search in a small 3×3 window around the scaled position</li>
+                                <li>Refine the alignment incrementally</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+                <div class="section">
+                <h2>Example Results with NCC + Pyramid</h2>
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="./media/cathedral_pyramid.jpg" alt="G: (-2, -5), R: (-3, -12)" loading="lazy">
+                        <h4>G: (2, 5), R: (3, 12)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/monastery_pyramid.jpg" alt="G: (-2, 3), R: (-2, -3)" loading="lazy">
+                        <h4>G: (2, -3), R: (2, 3)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/tobolsk_pyramid.jpg" alt="G: (-3, -3), R: (-3, -6)" loading="lazy">
+                        <h4>G: (3, 3), R: (3, 6)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/church_pyramid.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (4, 25), R: (-4, 58)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/emir_pyramid.jpg" alt="G: (-24, -49), R: (-40, -50)" loading="lazy">
+                        <h4>G: (24, 49), R: (-1047, 155)</h4>
+                        <h4>Clearly something went wrong on this picture! Let's optimize it later</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/harvesters_pyramid.jpg" alt="G: (-17, -50), R: (-13, -50)" loading="lazy">
+                        <h4>G: (17, 60), R: (13, 124)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/icon_pyramid.jpg" alt="G: (-17, -42), R: (-23, -50)" loading="lazy">
+                        <h4>G: (17, 41), R: (23, 89)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/italil_pyramid.jpg" alt="G: (-22, -38), R: (-35, -50)" loading="lazy">
+                        <h4>G: (21, 38), R: (35, 76)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/lastochikino_pyramid.jpg" alt="G: (2, 3), R: (8, -50)" loading="lazy">
+                        <h4>G: (-2, -3), R: (-9, 75)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/lugano_pyramid.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (-16, 41), R: (-29, 93)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/melons_pyramid.jpg" alt="G: (-10, -50), R: (-16, -50)" loading="lazy">
+                        <h4>G: (11, 82), R: (13, 178)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/self_portrait_pyramid.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (29, 79), R: (37, 176)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/siren_pyramid.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (-6, 49), R: (-25, 96)</h4>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/three_generations_pyramid.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
+                        <h4>G: (14, 53), R: (11, 112)</h4>
+                    </div>
+                </div>
+            
+                <h3>4. Sobel Edge Detection (bells and whistles)</h3>
+                <p>To optimize the NCC pyramid approach, consider using edge detection. The Sobel operator detects edges by computing the gradient of image intensity at each pixel using convolution with two 3×3 kernels.</p>
                 <div class="algorithm-steps">
                     <h4>Sobel Operators</h4>
                     <p>The Sobel operators are defined as two 3×3 convolution kernels:</p>
@@ -325,7 +419,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="algorithm-steps">
                     <h4>Mathematical Formulation</h4>
                     <p>For an image I(x,y), the Sobel edge detection process computes:</p>
@@ -336,102 +429,20 @@
                     </ol>
                     <p>Where * denotes the convolution operation.</p>
                 </div>
-
-                <h3>3. Normalized Cross-Correlation (NCC)</h3>
-                <p>For alignment scoring, we use NCC which measures the correlation between edge maps:</p>
-                <div class="algorithm-steps">
-                    <p><strong>NCC Formula:</strong> NCC(A,B) = Σ(A-Ā)(B-B̄) / (||A-Ā|| × ||B-B̄||)</p>
-                </div>
-
-                <h3>4. Multi-Scale Pyramid Alignment</h3>
-                <p>For high-resolution images, exhaustive search becomes computationally prohibitive. The pyramid approach provides an efficient solution:</p>
-                
-                <div class="algorithm-steps">
-                    <ol>
-                        <li><strong>Pyramid Construction:</strong> Create multiple resolution levels by iteratively downsampling by factor of 2</li>
-                        <li><strong>Coarse Alignment:</strong> Start with exhaustive search on the lowest resolution (≈25px minimum dimension)</li>
-                        <li><strong>Refinement:</strong> For each higher resolution level:
-                            <ul>
-                                <li>Scale up the displacement from previous level (×2)</li>
-                                <li>Search in a small 3×3 window around the scaled position</li>
-                                <li>Refine the alignment incrementally</li>
-                            </ul>
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        
-        <div class="section">
-                <h2>Example Results</h2>
-                <div class="image-comparison">
-                    <div class="image-item">
-                        <img src="./media/cathedral.jpg" alt="G: (-2, -5), R: (-3, -12)" loading="lazy">
-                        <h4>G: (-2, -5), R: (-3, -12)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/monastery.jpg" alt="G: (-2, 3), R: (-2, -3)" loading="lazy">
-                        <h4>G: (-2, 3), R: (-2, -3)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/tobolsk.jpg" alt="G: (-3, -3), R: (-3, -6)" loading="lazy">
-                        <h4>G: (-3, -3), R: (-3, -6)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/church.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h4>G: (-4, -25), R: (4, 50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/emir.jpg" alt="G: (-24, -49), R: (-40, -50)" loading="lazy">
-                        <h4>G: (-24, -49), R: (-40, -50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/harvesters.jpg" alt="G: (-17, -50), R: (-13, -50)" loading="lazy">
-                        <h4>G: (-17, -50), R: (-13, -50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/icon.jpg" alt="G: (-17, -42), R: (-23, -50)" loading="lazy">
-                        <h4>G: (-17, -42), R: (-23, -50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/italil.jpg" alt="G: (-22, -38), R: (-35, -50)" loading="lazy">
-                        <h4>G: (-22, -38), R: (-35, -50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/lastochikino.jpg" alt="G: (2, 3), R: (8, -50)" loading="lazy">
-                        <h4>G: (2, 3), R: (8, -50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/lugano.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h4>G: (17, -41), R: (29, -50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/melons.jpg" alt="G: (-10, -50), R: (-16, -50)" loading="lazy">
-                        <h4>G: (-10, -50), R: (-16, -50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/self_portrait.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h4>G: (-27, -50), R: (-39, -50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/siren.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h4>G: (6, -49), R: (27, -50)</h4>
-                    </div>
-                    <div class="image-item">
-                        <img src="./media/three_generations.jpg" alt="G: (-4, -25), R: (4, 50)" loading="lazy">
-                        <h4>G: (-12, -50), R: (-7, -50)</h4>
-                    </div>
-                </div>
             </div>
             
             <!-- Part 2: Prokudin-Gorskii collection -->
             <div class="section">
-                <h2>Part 2: Prokudin-Gorskii Collection Results</h2>
+                <h2>Results of Edge Detection + NCC + Pyramid</h2>
                 <div class="image-comparison">
                     <div class="image-item">
                         <img src="./media/00170a.jpg" loading="lazy">
                     </div>
                     <div class="image-item">
                         <img src="./media/00210a.jpg" loading="lazy">
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/emir.jpg" loading="lazy">
                     </div>
                 </div>
             </div>

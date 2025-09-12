@@ -7,34 +7,7 @@ from skimage.transform import rescale
 def downsample_image(image, factor=2):
     return rescale(image, 1.0/factor, anti_aliasing=True, preserve_range=True)
 
-def sobel(image):
-    '''sobel_x = np.array([[-1, 0, 1],
-                        [-2, 0, 2],
-                        [-1, 0, 1]])
-    sobel_y = np.array([[-1, -2, -1],
-                        [0, 0, 0],
-                        [1, 2, 1]])'''
-
-    padded = np.pad(image, ((1, 1), (1, 1)), mode='edge')
-
-    grad_x = (
-        -1 * padded[:-2, :-2] + 1 * padded[:-2, 2:] +  
-        -2 * padded[1:-1, :-2] + 2 * padded[1:-1, 2:] +  
-        -1 * padded[2:, :-2] + 1 * padded[2:, 2:]        
-    )
-
-    grad_y = (
-        -1 * padded[:-2, :-2] - 2 * padded[:-2, 1:-1] - 1 * padded[:-2, 2:] +   
-        1 * padded[2:, :-2] + 2 * padded[2:, 1:-1] + 1 * padded[2:, 2:]        
-    )
-
-    magnitude = np.sqrt(grad_x**2 + grad_y**2)
-    
-    return magnitude
-
-def align_with_edge(channel_to_align, reference_channel, search_range=15):
-    ref_edges = sobel(reference_channel)
-    channel_edges = sobel(channel_to_align)
+def align_simple(channel_to_align, reference_channel, search_range=15):
     best_score = -1
     best_displacement = (0, 0)
 
@@ -43,11 +16,11 @@ def align_with_edge(channel_to_align, reference_channel, search_range=15):
     
     for dx in range(-search_range, search_range + 1):
         for dy in range(-search_range, search_range + 1):
-            shifted_edges = np.roll(channel_edges, dx, axis=1)
-            shifted_edges = np.roll(shifted_edges, dy, axis=0)
+            shifted_channel = np.roll(channel_to_align, dx, axis=1)
+            shifted_channel = np.roll(shifted_channel, dy, axis=0)
 
-            ref_inner = ref_edges[margin_x:-margin_x, margin_y:-margin_y]
-            shifted_inner = shifted_edges[margin_x:-margin_x, margin_y:-margin_y]
+            ref_inner = reference_channel[margin_x:-margin_x, margin_y:-margin_y]
+            shifted_inner = shifted_channel[margin_x:-margin_x, margin_y:-margin_y]
 
             ref_flat = ref_inner.flatten()
             shifted_flat = shifted_inner.flatten()
@@ -69,7 +42,7 @@ def align_with_edge(channel_to_align, reference_channel, search_range=15):
     
     return best_displacement[0], best_displacement[1], aligned_channel
 
-def align_pyramid(channel_to_align, reference_channel, max_levels=5, base_search_range=15):
+def pyramid_simple(channel_to_align, reference_channel, max_levels=7, base_search_range=20):
 
     ref_pyramid = [reference_channel]
     channel_pyramid = [channel_to_align]
@@ -99,7 +72,7 @@ def align_pyramid(channel_to_align, reference_channel, max_levels=5, base_search
         else:
             current_channel_shifted = channel_pyramid[level]
 
-        dx, dy, _ = align_with_edge(
+        dx, dy, _ = align_simple(
             current_channel_shifted, 
             ref_pyramid[level], 
             search_range=current_search_range
@@ -110,7 +83,7 @@ def align_pyramid(channel_to_align, reference_channel, max_levels=5, base_search
 
     final_aligned = np.roll(channel_to_align, total_dx, axis=1)
     final_aligned = np.roll(final_aligned, total_dy, axis=0)
-    
+
     return total_dx, total_dy, final_aligned
 
 def colorize_image(image_path):
@@ -123,10 +96,11 @@ def colorize_image(image_path):
     g = im[height:2*height]           
     r = im[2*height:3*height]
 
-    g_dx, g_dy, aligned_g = align_pyramid(g, b)
-    r_dx, r_dy, aligned_r = align_pyramid(r, b)
+    g_dx, g_dy, aligned_g = pyramid_simple(g, b)
+    r_dx, r_dy, aligned_r = pyramid_simple(r, b)
 
     color_image = np.dstack([aligned_r, aligned_g, b])
+    
     plt.figure(figsize=(12, 8))
     plt.imshow(color_image)
     plt.title(f"G: ({g_dx}, {g_dy}), R: ({r_dx}, {r_dy})")
@@ -136,5 +110,5 @@ def colorize_image(image_path):
     return color_image, r_dx, r_dy, r_dx, r_dy
 
 if __name__ == "__main__":
-    image = '/Users/junwei/Fall2025/CS180/cs180 proj1 data/emir.tif'
+    image = '/Users/junwei/Fall2025/CS180/cs180 proj1 data/three_generations.tif'
     result = colorize_image(image)
