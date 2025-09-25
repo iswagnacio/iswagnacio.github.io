@@ -455,8 +455,8 @@ dog_y = convolve2d(gaussian_2d, Dy, mode='same')  # DoG-Y filter</pre>
                 </div>
 
                 <h3>4. Results Comparison</h3>
+                <strong>Sequential Implementation: Blur → Differentiate</strong>
                 <div class="image-comparison">
-                    <strong>Sequential Implementation: Blur → Differentiate</strong>
                     <div class="image-item">
                         <img src="./media/sequent_gradient_mag.png" alt="Method 1 Gradient" loading="lazy">
                         <h4>Gradient Magnitude</h4>
@@ -467,8 +467,8 @@ dog_y = convolve2d(gaussian_2d, Dy, mode='same')  # DoG-Y filter</pre>
                     </div>
                 </div>
 
+                <strong>DoG Implementation</strong>
                 <div class="image-comparison">
-                    <strong>DoG Implementation</strong>
                     <div class="image-item">
                         <img src="./media/DoG_gradient_mag.png" alt="Method 2 Gradient" loading="lazy">
                         <h4>Gradient Magnitude</h4>
@@ -478,8 +478,8 @@ dog_y = convolve2d(gaussian_2d, Dy, mode='same')  # DoG-Y filter</pre>
                         <h4>Edge Detection</h4>
                     </div>
                 </div>
+                <strong>Let's recall the result from finite difference operators</strong>
                 <div class="image-comparison">
-                    <strong>Let's recall the result from finite difference operators</strong>
                     <div class="image-item">
                         <img src="./media/gradient_magnitude.png" alt="Method 2 Gradient" loading="lazy">
                         <h4>Gradient Magnitude</h4>
@@ -575,7 +575,7 @@ dog_y = convolve2d(gaussian_2d, Dy, mode='same')  # DoG-Y filter</pre>
                 <h3>6. Additional Image - with extreme details & edges!</h3>
                 <div class="image-comparison">
                     <div class="image-item">
-                        <img src="./media/_DSF0487.jpg" alt="Original Taj Mahal" loading="lazy">
+                        <img src="./media/_DSF0487.jpg" alt="Original flower" loading="lazy">
                         <h4>Original Image</h4>
                     </div>
                     <div class="image-item">
