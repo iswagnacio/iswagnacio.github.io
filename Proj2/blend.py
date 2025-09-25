@@ -4,11 +4,9 @@ from scipy.ndimage import gaussian_filter
 
 def create_gaussian_stack(image, num_levels=6, sigma_base=1.0):
     gaussian_stack = []
-    
-    # Level 0
+
     gaussian_stack.append(image.copy())
-    
-    # Subsequent levels
+
     for level in range(1, num_levels):
         sigma = sigma_base * (2 ** level)
         
@@ -44,7 +42,7 @@ def reconstruct_from_laplacian(laplacian_stack):
     
     return reconstructed
 
-def visualize_stacks(gaussian_stack, laplacian_stack, title="Gaussian and Laplacian Stacks"):
+def visualize_stacks(gaussian_stack, laplacian_stack):
     num_levels = len(gaussian_stack)
     fig, axes = plt.subplots(2, num_levels, figsize=(3*num_levels, 6))
     
@@ -78,28 +76,8 @@ def visualize_stacks(gaussian_stack, laplacian_stack, title="Gaussian and Laplac
         axes[1, i].set_title(f'Laplacian {i}')
         axes[1, i].axis('off')
     
-    plt.suptitle(title, fontsize=14)
     plt.tight_layout()
     plt.show()
-
-def test_reconstruction(image, num_levels=5):
-    print(f"Testing reconstruction with {num_levels} levels...")
- 
-    gaussian_stack = create_gaussian_stack(image, num_levels)
-    laplacian_stack = create_laplacian_stack(gaussian_stack)
-    reconstructed = reconstruct_from_laplacian(laplacian_stack)
-
-    error = np.mean(np.abs(image - reconstructed))
-    max_error = np.max(np.abs(image - reconstructed))
-    
-    print(f"Mean reconstruction error: {error:.8f}")
-    print(f"Max reconstruction error: {max_error:.8f}")
-    print("Perfect reconstruction achieved!" if error < 1e-10 else "Small numerical errors present")
-
-    visualize_stacks(gaussian_stack, laplacian_stack, 
-                    f"Test Image - {num_levels} Levels (Error: {error:.2e})")
-    
-    return gaussian_stack, laplacian_stack, reconstructed
 
 def create_oraple(apple_img, orange_img, num_levels=6):
     h, w = min(apple_img.shape[0], orange_img.shape[0]), min(apple_img.shape[1], orange_img.shape[1])
@@ -115,8 +93,7 @@ def create_oraple(apple_img, orange_img, num_levels=6):
     mask_gaussian = create_gaussian_stack(mask, num_levels)
     apple_laplacian = create_laplacian_stack(apple_gaussian)
     orange_laplacian = create_laplacian_stack(orange_gaussian)
-    
-    # Blend Laplacian levels using Gaussian mask
+
     blended_laplacian = []
     for level in range(num_levels):
         mask_level = mask_gaussian[level]
@@ -150,33 +127,25 @@ def create_oraple(apple_img, orange_img, num_levels=6):
     
     return blended, process_imgs
 
-def demonstrate_oraple_process(apple_path, orange_path):
+def demonstrate_oraple_process():
 
     try:
-        apple = plt.imread('/Users/junwei/Fall2025/CS180/iswagnacio.github.io/Proj2/spline/apple.jpeg')
-        orange = plt.imread('/Users/junwei/Fall2025/CS180/iswagnacio.github.io/Proj2/spline/orange.jpeg')
+        apple = plt.imread('/Users/junwei/Fall2025/CS180/iswagnacio.github.io/Proj2/media/apple.jpeg')
+        orange = plt.imread('/Users/junwei/Fall2025/CS180/iswagnacio.github.io/Proj2/media/orange.jpeg')
         
         if apple.max() > 1:
             apple = apple / 255.0
         if orange.max() > 1:
             orange = orange / 255.0
-        
-        print("Creating Oraple blend...")
+
         blended, process = create_oraple(apple, orange, num_levels=6)
 
-        fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+        plt.imshow(np.clip(blended, 0, 1))
+        plt.imsave('/Users/junwei/Fall2025/CS180/iswagnacio.github.io/Proj2/media/oraple.png', np.clip(blended, 0, 1))
+        plt.axis('off')
+        plt.show()
 
-        axes[0, 0].imshow(apple[:blended.shape[0], :blended.shape[1]])
-        axes[0, 0].set_title('Apple')
-        axes[0, 0].axis('off')
-        
-        axes[0, 1].imshow(orange[:blended.shape[0], :blended.shape[1]])
-        axes[0, 1].set_title('Orange')
-        axes[0, 1].axis('off')
-        
-        axes[0, 2].imshow(np.clip(blended, 0, 1))
-        axes[0, 2].set_title('Oraple (Blended)')
-        axes[0, 2].axis('off')
+        fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
         for i in range(3):
             if i < len(process['blended_laplacian']) - 1:
@@ -184,26 +153,98 @@ def demonstrate_oraple_process(apple_path, orange_path):
             else:
                 level_img = process['blended_laplacian'][i]
             
-            axes[1, i].imshow(np.clip(level_img, 0, 1))
-            axes[1, i].set_title(f'Blended Laplacian Level {i}')
-            axes[1, i].axis('off')
+            axes[i].imshow(np.clip(level_img, 0, 1))
+            axes[i].set_title(f'Blended Laplacian Level {i}')
+            axes[i].axis('off')
         
-        plt.suptitle('Multiresolution Blending: The Oraple', fontsize=16)
         plt.tight_layout()
         plt.show()
 
-        print("\nVisualizing Apple Laplacian Stack:")
-        visualize_stacks(process['apple_gaussian'], process['apple_laplacian'], "Apple - Gaussian and Laplacian Stacks")
-        
-        print("Visualizing Orange Laplacian Stack:")
-        visualize_stacks(process['orange_gaussian'], process['orange_laplacian'], "Orange - Gaussian and Laplacian Stacks")
+        #visualize_stacks(process['apple_gaussian'], process['apple_laplacian'])
+        visualize_stacks(process['orange_gaussian'], process['orange_laplacian'])
         
         return blended, process
         
     except FileNotFoundError as e:
         print(f"Error loading images: {e}")
-        print("Please ensure apple.jpg and orange.jpg are in the current directory")
+        return None, None
+
+def load_and_process_mask(mask_path):
+    mask = plt.imread(mask_path)
+    if len(mask.shape) == 3:
+        mask = np.mean(mask, axis=2)
+    if mask.max() > 1:
+        mask = mask / 255.0
+    
+    return mask
+
+def create_custom_blend(image1, image2, mask_path, num_levels=6):
+
+    mask = load_and_process_mask(mask_path)
+    h = min(image1.shape[0], image2.shape[0], mask.shape[0])
+    w = min(image1.shape[1], image2.shape[1], mask.shape[1])
+    
+    img1 = image1[:h, :w]  # Background
+    img2 = image2[:h, :w]  # Foreground 
+    mask = mask[:h, :w]
+    
+    # Create Gaussian stacks
+    img1_gaussian = create_gaussian_stack(img1, num_levels)
+    img2_gaussian = create_gaussian_stack(img2, num_levels)
+    mask_gaussian = create_gaussian_stack(mask, num_levels)
+    
+    # Create Laplacian stacks
+    img1_laplacian = create_laplacian_stack(img1_gaussian)
+    img2_laplacian = create_laplacian_stack(img2_gaussian)
+
+    blended_laplacian = []
+    for level in range(num_levels):
+        mask_level = mask_gaussian[level]
+        
+        if len(img1.shape) == 3: 
+            blended_level = np.zeros_like(img1_laplacian[level])
+            for c in range(3):
+                blended_level[:, :, c] = (
+                    (1 - mask_level) * img2_laplacian[level][:, :, c] +
+                    mask_level * img1_laplacian[level][:, :, c]
+                )
+        else: 
+            blended_level = (
+                (1 - mask_level) * img2_laplacian[level] +
+                mask_level * img1_laplacian[level]
+            )
+        
+        blended_laplacian.append(blended_level)
+
+    blended = reconstruct_from_laplacian(blended_laplacian)
+    
+    return blended
+
+def demonstrate_custom_blend():
+    try:
+        camera_img = plt.imread('/Users/junwei/Fall2025/CS180/iswagnacio.github.io/Proj2/media/DSC_0656.jpg') 
+        viewfinder_img = plt.imread('/Users/junwei/Fall2025/CS180/iswagnacio.github.io/Proj2/DSC_0993.jpeg')
+        mask_path = '/Users/junwei/Fall2025/CS180/iswagnacio.github.io/Proj2/media/mask.jpg' 
+
+        if camera_img.max() > 1:
+            camera_img = camera_img / 255.0
+        if viewfinder_img.max() > 1:
+            viewfinder_img = viewfinder_img / 255.0
+
+        blended, process = create_custom_blend(camera_img, viewfinder_img, mask_path, num_levels=6)
+
+        plt.figure(figsize=(10, 8))
+        plt.imshow(np.clip(blended, 0, 1))
+        plt.axis('off')
+        plt.title('Final Custom Blended Image')
+        plt.show()
+        
+        return blended, process
+        
+    except FileNotFoundError as e:
+        print(f"Error loading images: {e}")
         return None, None
 
 if __name__ == "__main__":
-    blended, process = demonstrate_oraple_process('apple.jpg', 'orange.jpg')
+    #blended, process = demonstrate_oraple_process()
+    blended, process = demonstrate_custom_blend()
