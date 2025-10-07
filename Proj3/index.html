@@ -214,6 +214,19 @@
             color: #856404;
             margin-bottom: 0;
         }
+
+        .comparison-container {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .comparison-container h4 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
         
         @media (max-width: 768px) {
             .image-comparison {
@@ -261,6 +274,7 @@
                         <li><strong>Image Rectification:</strong> Correcting perspective distortion to create orthogonal views</li>
                         <li><strong>Image Warping:</strong> Applying homography transforms to align images</li>
                         <li><strong>Image Blending:</strong> Combining multiple warped images into seamless mosaics</li>
+                        <li><strong>Laplacian Pyramid Blending:</strong> Advanced multiresolution blending to eliminate artifacts</li>
                     </ul>
                 </div>
             </div>
@@ -341,23 +355,144 @@
                     </ol>
                 </div>
 
-                <h3>2. Panorama Results</h3>
-                <p>Below is a panorama created from multiple overlapping images (frames 0305 to 0310):</p>
+                <h3>2. Basic Panorama Results</h3>
+                <p>Below is a panorama created from multiple overlapping images (frames 0305 to 0310) using simple alpha blending:</p>
 
                 <div class="single-image">
-                    <img src="./media/mosaic_1/panorama_0305_to_0310.png" alt="Panorama Result" loading="lazy">
-                    <h4>Final Panorama Mosaic</h4>
+                    <img src="./media/mosaic_1/panorama_0305_to_0310.png" alt="Basic Panorama Result" loading="lazy">
+                    <h4>Basic Alpha Blending Panorama</h4>
                     <div class="caption" style="max-width: 800px; margin: 15px auto; color: #666;">
-                        Seamless panorama created by warping and blending 6 overlapping images. The homography transformations align the images while blending removes visible seams.
+                        Panorama created using basic alpha blending. Notice the visible wedge-like artifacts and seams in the overlapping regions where the blending transition occurs.
+                    </div>
+                </div>
+
+                <div class="algorithm-steps">
+                    <h4>Limitations of Simple Alpha Blending</h4>
+                    <ul>
+                        <li><strong>Visible Seams:</strong> Abrupt transitions create noticeable boundaries between images</li>
+                        <li><strong>Wedge Artifacts:</strong> Linear blending weights create characteristic wedge-shaped ghosting</li>
+                        <li><strong>Frequency Mismatch:</strong> High-frequency details don't align perfectly, creating double edges</li>
+                        <li><strong>Exposure Differences:</strong> Variations in brightness between images become apparent at seams</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Part 3: Laplacian Pyramid Blending -->
+            <div class="section">
+                <h2>Part 3: Optimized Blending with Laplacian Pyramids</h2>
+                
+                <div class="overview-box">
+                    <h3>Multiresolution Blending</h3>
+                    <p>To eliminate the wedge-like artifacts and visible seams from basic blending, we implement Laplacian pyramid blending. This technique, inspired by the classic Burt and Adelson paper, blends images separately at different frequency bands, allowing smooth transitions for low-frequency content while preserving sharp high-frequency details.</p>    
+                </div>
+
+                <h3>1. Laplacian Pyramid Theory</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Why Multiresolution Blending?</h4>
+                    <p>The key insight is that our visual system is sensitive to different spatial frequencies at different scales. By decomposing images into frequency bands and blending each band with an appropriate transition width, we can:</p>
+                    <ul>
+                        <li><strong>Low frequencies:</strong> Blend gradually over wide regions to avoid brightness discontinuities</li>
+                        <li><strong>High frequencies:</strong> Blend sharply to preserve edge details and avoid ghosting</li>
+                        <li><strong>Result:</strong> Seamless transitions without visible artifacts</li>
+                    </ul>
+                </div>
+
+                <div class="algorithm-steps">
+                    <h4>Mathematical Framework</h4>
+                    
+                    <p><strong>Gaussian Pyramid Construction:</strong></p>
+                    <ul>
+                        <li>G₀ = Original Image</li>
+                        <li>Gᵢ₊₁ = Blur(Gᵢ) - Progressive smoothing without downsampling</li>
+                        <li>Each level represents increasingly low-pass filtered versions</li>
+                    </ul>
+                    
+                    <p><strong>Laplacian Pyramid Construction:</strong></p>
+                    <ul>
+                        <li>Lᵢ = Gᵢ - Gᵢ₊₁ - Bandpass filter at scale i</li>
+                        <li>L₍ₙ₋₁₎ = Gₙ - Lowest frequency residual</li>
+                        <li>Each level captures details at a specific frequency band</li>
+                    </ul>
+                    
+                    <p><strong>Blending Process:</strong></p>
+                    <ul>
+                        <li>Create Gaussian pyramid for the blending mask</li>
+                        <li>For each level i: Blend_Lᵢ = L_Aᵢ × Mask_Gᵢ + L_Bᵢ × (1 - Mask_Gᵢ)</li>
+                        <li>Reconstruct: Result = Σ Blend_Lᵢ</li>
+                    </ul>
+                </div>
+
+                <h3>2. Implementation Details</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Pipeline for Panorama Blending</h4>
+                    <ol>
+                        <li><strong>Warp Images:</strong> Apply homography transformations to align all images</li>
+                        <li><strong>Create Masks:</strong> Generate binary masks for each warped image indicating valid pixel regions</li>
+                        <li><strong>Distance Transform:</strong> Convert masks to distance fields for smooth blending weights</li>
+                        <li><strong>Build Pyramids:</strong> Construct Laplacian pyramids (typically 5-7 levels) for each image and Gaussian pyramids for masks</li>
+                        <li><strong>Blend Levels:</strong> At each pyramid level, blend images using corresponding mask weights</li>
+                        <li><strong>Reconstruct:</strong> Collapse the blended pyramid to create the final panorama</li>
+                    </ol>
+                </div>
+
+                <div class="algorithm-steps">
+                    <h4>Key Parameters</h4>
+                    <ul>
+                        <li><strong>Pyramid Levels:</strong> 5-7 levels provide good frequency decomposition</li>
+                        <li><strong>Gaussian σ:</strong> Typically 2.0-3.0 for each pyramid level</li>
+                        <li><strong>Blend Width:</strong> Automatically determined by distance transform, ensuring smooth transitions</li>
+                    </ul>
+                </div>
+
+                <h3>3. Optimized Results</h3>
+                
+                <div class="single-image">
+                    <img src="./media/mosaic_1/panorama_0305_to_0310_pyramid.png" alt="Laplacian Pyramid Panorama" loading="lazy">
+                    <h4>Laplacian Pyramid Blending Result</h4>
+                    <div class="caption" style="max-width: 800px; margin: 15px auto; color: #666;">
+                        Optimized panorama using Laplacian pyramid blending. Note the complete elimination of wedge artifacts and seamless transitions between images.
+                    </div>
+                </div>
+
+                <h3>4. Comparison: Before and After Optimization</h3>
+                
+                <div class="comparison-container">
+                    <h4>Side-by-Side Comparison</h4>
+                    <div class="image-comparison">
+                        <div class="image-item">
+                            <img src="./media/mosaic_1/panorama_0305_to_0310.png" alt="Before - Alpha Blending" loading="lazy">
+                            <h4>Before: Simple Alpha Blending</h4>
+                            <div class="caption">Visible wedge artifacts and seams in overlapping regions</div>
+                        </div>
+                        <div class="image-item">
+                            <img src="./media/mosaic_1/panorama_0305_to_0310_pyramid.png" alt="After - Laplacian Pyramid" loading="lazy">
+                            <h4>After: Laplacian Pyramid Blending</h4>
+                            <div class="caption">Seamless result with no visible artifacts</div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="highlight-box">
-                    <h4>Key Observations</h4>
+                    <h4>Improvements Achieved</h4>
                     <ul>
-                        <li><strong>Alignment Quality:</strong> Homography successfully aligns overlapping regions with minimal ghosting</li>
-                        <li><strong>Blending:</strong> Smooth transitions between images create a natural-looking panorama</li>
-                        <li><strong>Field of View:</strong> The mosaic captures a significantly wider scene than any single source image</li>
+                        <li><strong>Eliminated Wedge Artifacts:</strong> Multiresolution blending removes the characteristic wedge-shaped ghosting from alpha blending</li>
+                        <li><strong>Seamless Transitions:</strong> No visible seams or boundaries between stitched images</li>
+                        <li><strong>Preserved Details:</strong> High-frequency content remains sharp without double-edge artifacts</li>
+                        <li><strong>Natural Appearance:</strong> The final panorama looks like a single photograph rather than a composite</li>
+                        <li><strong>Robust to Exposure:</strong> Better handling of slight brightness variations between images</li>
+                    </ul>
+                </div>
+
+                <div class="algorithm-steps">
+                    <h4>Why It Works Better</h4>
+                    <p>The success of Laplacian pyramid blending comes from matching the blending strategy to the characteristics of human visual perception:</p>
+                    <ul>
+                        <li><strong>Scale-appropriate transitions:</strong> Wide transitions for coarse features, narrow for fine details</li>
+                        <li><strong>Frequency preservation:</strong> Each frequency band maintains its characteristics through the blend</li>
+                        <li><strong>Gradual weight changes:</strong> The Gaussian pyramid of the mask creates smooth weight transitions at each scale</li>
+                        <li><strong>Local adaptation:</strong> Blending adapts to local image content rather than using global linear weights</li>
                     </ul>
                 </div>
             </div>
@@ -373,6 +508,8 @@
                         <li>Image rectification and perspective correction</li>
                         <li>Basic panorama creation from multiple images</li>
                         <li>Image warping and coordinate transformation</li>
+                        <li>Laplacian pyramid blending implementation</li>
+                        <li>Wedge artifact elimination and seamless stitching</li>
                     </ul>
                 </div>
 
@@ -382,21 +519,8 @@
                         <li><strong>Robust Homography:</strong> Successfully computing transformations from point correspondences</li>
                         <li><strong>Rectification:</strong> Demonstrated ability to correct perspective distortion</li>
                         <li><strong>Multi-image Mosaicing:</strong> Creating wide-angle panoramas from 6+ images</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Bells and Whistles (if applicable) -->
-            <div class="section">
-                <h2>Additional Work</h2>
-                
-                <div class="algorithm-steps">
-                    <h4>Future Enhancements</h4>
-                    <ul>
-                        <li><strong>Automatic Feature Detection:</strong> Using SIFT or ORB for correspondence matching</li>
-                        <li><strong>RANSAC:</strong> Robust homography estimation with outlier rejection</li>
-                        <li><strong>Advanced Blending:</strong> Multiresolution blending for seamless transitions</li>
-                        <li><strong>Cylindrical Projection:</strong> Better handling of wide-angle panoramas</li>
+                        <li><strong>Advanced Blending:</strong> Implemented multiresolution Laplacian pyramid blending for artifact-free results</li>
+                        <li><strong>Quality Optimization:</strong> Eliminated wedge artifacts and achieved seamless transitions</li>
                     </ul>
                 </div>
             </div>
