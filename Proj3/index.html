@@ -1,24 +1,407 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Portfolio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 3</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+        
+        .container {
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .section h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .section h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .section p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .overview-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0 30px 0;
+        }
+        
+        .overview-box h3 {
+            margin-top: 0;
+            color: white;
+        }
+        
+        .overview-box p {
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .algorithm-steps {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        .algorithm-steps h4 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .algorithm-steps ul, .algorithm-steps ol {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .algorithm-steps li {
+            margin-bottom: 10px;
+        }
+        
+        .image-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .image-item {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .image-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .image-item img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .image-item h3, .image-item h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        
+        .image-item .caption {
+            color: #666;
+            font-style: italic;
+            line-height: 1.4;
+        }
+        
+        .single-image {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .single-image img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .highlight-box h3, .highlight-box h4 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        
+        .progress-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .progress-note h4 {
+            color: #856404;
+            margin-top: 0;
+        }
+        
+        .progress-note p {
+            color: #856404;
+            margin-bottom: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .image-comparison {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to My CS180 Portfolio!</h1>
-    <div>
-        <a href="./Proj0/index.html">Project 0</a>
-    </div>
-    <div>
-        <a href="./Proj1/index.html">Project 1</a>
-    </div>
-    <div>
-        <a href="./Proj2/index.html">Project 2</a>
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-link">← Back to Portfolio</a>
+            <h1>Project 3</h1>
+            <div class="subtitle">Image Mosaicing and Homography</div>
+        </div>
+        
+        <div class="content">
+            
+            <!-- Introduction -->
+            <div class="section">
+                <h2>Project Overview</h2>
+                
+                <div class="overview-box">
+                    <h3>Goal</h3>
+                    <p>This project explores the creation of image mosaics through homography transformations. By computing the geometric relationship between overlapping images, we can warp and blend them to create seamless panoramas. The project demonstrates key concepts in computer vision including perspective transforms, image rectification, and multi-image blending.</p>    
+                </div>
+
+                <div class="algorithm-steps">
+                    <h4>Key Techniques</h4>
+                    <ul>
+                        <li><strong>Homography Estimation:</strong> Computing the 3x3 transformation matrix that maps points between image planes</li>
+                        <li><strong>Image Rectification:</strong> Correcting perspective distortion to create orthogonal views</li>
+                        <li><strong>Image Warping:</strong> Applying homography transforms to align images</li>
+                        <li><strong>Image Blending:</strong> Combining multiple warped images into seamless mosaics</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Part 1: Homography and Image Rectification -->
+            <div class="section">
+                <h2>Part 1: Homography and Image Rectification</h2>
+                
+                <div class="overview-box">
+                    <h3>Understanding Homography</h3>
+                    <p>A homography is a projective transformation that maps points from one plane to another. In the context of images, it describes how a planar surface appears from different viewpoints. By computing the homography matrix H, we can transform images taken from different perspectives to align them or correct distortions.</p>    
+                </div>
+
+                <h3>1. Mathematical Foundation</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Homography Equation</h4>
+                    <p>For a point (x, y) in one image and its corresponding point (x', y') in another image, the homography relationship is:</p>
+                    <div style="background: #fff; padding: 15px; border-radius: 5px; margin: 10px 0; text-align: center;">
+                        <p style="font-family: 'Courier New', monospace; font-size: 1.1em; margin: 5px 0;">
+                            ⎡x'⎤     ⎡h₁₁ h₁₂ h₁₃⎤ ⎡x⎤<br>
+                            ⎢y'⎥ = λ ⎢h₂₁ h₂₂ h₂₃⎥ ⎢y⎥<br>
+                            ⎣1 ⎦     ⎣h₃₁ h₃₂ h₃₃⎦ ⎣1⎦
+                        </p>
+                    </div>
+                    <p>Where λ is a scaling factor and H is the 3×3 homography matrix with 8 degrees of freedom (h₃₃ = 1).</p>
+                    
+                    <h4>Solving for Homography</h4>
+                    <p>Given n ≥ 4 point correspondences, we can solve for H using a system of linear equations. Each point correspondence provides 2 equations, forming an overdetermined system that can be solved using least squares (SVD).</p>
+                </div>
+
+                <h3>2. Image Rectification Test</h3>
+                <p>To verify our homography implementation, we first test on a simple rectification task: transforming a tilted planar surface to appear frontal.</p>
+
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="./media/IMG_6456.jpg" alt="Original Tilted Image" loading="lazy">
+                        <h4>Original Image</h4>
+                        <div class="caption">Input image with perspective distortion - the rectangular surface appears tilted</div>
+                    </div>
+                    <div class="image-item">
+                        <img src="./media/rectification_custom.png" alt="Rectified Image" loading="lazy">
+                        <h4>Rectified Image</h4>
+                        <div class="caption">After applying homography transformation - the surface now appears frontal and orthogonal</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>Rectification Process</h4>
+                    <ol>
+                        <li><strong>Define correspondences:</strong> Select 4+ points on the tilted plane and their desired positions in the rectified view</li>
+                        <li><strong>Compute homography:</strong> Solve the linear system to find the transformation matrix H</li>
+                        <li><strong>Warp image:</strong> Apply H to transform the original image to the rectified view</li>
+                        <li><strong>Verify:</strong> Check that parallel lines remain parallel and right angles are preserved</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Part 2: Image Mosaicing -->
+            <div class="section">
+                <h2>Part 2: Creating Image Mosaics</h2>
+                
+                <div class="overview-box">
+                    <h3>Panorama Creation</h3>
+                    <p>Image mosaicing combines multiple overlapping images into a single wide-angle panorama. The process involves computing homographies between image pairs, warping them to a common coordinate system, and blending them seamlessly.</p>    
+                </div>
+
+                <h3>1. Mosaic Pipeline</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Step-by-Step Process</h4>
+                    <ol>
+                        <li><strong>Image Capture:</strong> Take overlapping photos with 30-50% overlap while rotating around the camera center</li>
+                        <li><strong>Correspondence Selection:</strong> Manually select matching points in overlapping regions</li>
+                        <li><strong>Homography Computation:</strong> Calculate transformation matrices for each image pair</li>
+                        <li><strong>Image Warping:</strong> Transform all images to a common reference frame</li>
+                        <li><strong>Blending:</strong> Combine warped images using alpha blending or multiresolution techniques</li>
+                    </ol>
+                </div>
+
+                <h3>2. Panorama Results</h3>
+                <p>Below is a panorama created from multiple overlapping images (frames 0305 to 0310):</p>
+
+                <div class="single-image">
+                    <img src="./media/mosaic_1/panorama_0305_to_0310.png" alt="Panorama Result" loading="lazy">
+                    <h4>Final Panorama Mosaic</h4>
+                    <div class="caption" style="max-width: 800px; margin: 15px auto; color: #666;">
+                        Seamless panorama created by warping and blending 6 overlapping images. The homography transformations align the images while blending removes visible seams.
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>Key Observations</h4>
+                    <ul>
+                        <li><strong>Alignment Quality:</strong> Homography successfully aligns overlapping regions with minimal ghosting</li>
+                        <li><strong>Blending:</strong> Smooth transitions between images create a natural-looking panorama</li>
+                        <li><strong>Field of View:</strong> The mosaic captures a significantly wider scene than any single source image</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Progress and Next Steps -->
+            <div class="section">
+                <h2>Current Progress</h2>
+                
+                <div class="progress-note">
+                    <h4>✓ Completed Components</h4>
+                    <ul style="color: #856404; margin-bottom: 0;">
+                        <li>Homography matrix computation and solving</li>
+                        <li>Image rectification and perspective correction</li>
+                        <li>Basic panorama creation from multiple images</li>
+                        <li>Image warping and coordinate transformation</li>
+                    </ul>
+                </div>
+
+                <div class="algorithm-steps">
+                    <h4>Technical Achievements</h4>
+                    <ul>
+                        <li><strong>Robust Homography:</strong> Successfully computing transformations from point correspondences</li>
+                        <li><strong>Rectification:</strong> Demonstrated ability to correct perspective distortion</li>
+                        <li><strong>Multi-image Mosaicing:</strong> Creating wide-angle panoramas from 6+ images</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bells and Whistles (if applicable) -->
+            <div class="section">
+                <h2>Additional Work</h2>
+                
+                <div class="algorithm-steps">
+                    <h4>Future Enhancements</h4>
+                    <ul>
+                        <li><strong>Automatic Feature Detection:</strong> Using SIFT or ORB for correspondence matching</li>
+                        <li><strong>RANSAC:</strong> Robust homography estimation with outlier rejection</li>
+                        <li><strong>Advanced Blending:</strong> Multiresolution blending for seamless transitions</li>
+                        <li><strong>Cylindrical Projection:</strong> Better handling of wide-angle panoramas</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
     </div>
 </body>
 </html>

@@ -379,7 +379,7 @@ def blend_two_images(img1, img2, H_1to2, accumulator=None):
         min_y = int(np.floor(min(old_min_y, new_min_y)))
         max_y = int(np.ceil(max(old_max_y, new_max_y)))
         
-        canvas_w = max_x - min_x
+        canvas_w = max_x - min_x    
         canvas_h = max_y - min_y
         offset_x = -min_x
         offset_y = -min_y
