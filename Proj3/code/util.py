@@ -106,6 +106,7 @@ def warpImageNearestNeighbor(im, H, output_shape=None):
 
 def warpImageBilinear(im, H, output_shape=None):
     h, w = im.shape[:2]
+
     corners = np.array([
         [0, 0, 1],
         [w, 0, 1],
@@ -123,26 +124,27 @@ def warpImageBilinear(im, H, output_shape=None):
     
     if output_shape is not None:
         out_h, out_w = output_shape
+        min_x_used = 0
+        min_y_used = 0
     else:
         out_h = max_y - min_y
         out_w = max_x - min_x
-    
-    print(f"Output bounding box: ({min_x}, {min_y}) to ({max_x}, {max_y})")
-    print(f"Output size: {out_w} x {out_h}")
-    
+        min_x_used = min_x
+        min_y_used = min_y
+
     if len(im.shape) == 3:
         warped = np.zeros((out_h, out_w, im.shape[2]), dtype=np.float32)
     else:
         warped = np.zeros((out_h, out_w), dtype=np.float32)
     mask = np.zeros((out_h, out_w), dtype=np.uint8)
-    
+
     H_inv = np.linalg.inv(H)
     
     for y_out in range(out_h):
         for x_out in range(out_w):
-            x_out_original = x_out + min_x
-            y_out_original = y_out + min_y
-            p_out = np.array([x_out_original, y_out_original, 1.0])
+            x_out_world = x_out + min_x_used
+            y_out_world = y_out + min_y_used
+            p_out = np.array([x_out_world, y_out_world, 1.0])
             p_src = H_inv @ p_out
             
             if p_src[2] != 0:
@@ -215,19 +217,14 @@ def rectify_image_example():
         [800, 600],
         [0, 600]
     ], dtype=np.float32)
-    
-    print("\n=== DEBUG INFO ===")
+
     print("Source points (im1_pts):")
     print(im1_pts)
     print("\nTarget points (im2_pts):")
     print(im2_pts)
 
     H = computeH(im1_pts, im2_pts)
-    
-    print("\nWarping with custom Nearest Neighbor...")
     warped_nn, mask_nn = warpImageNearestNeighbor(im, H)
-    
-    print("\nWarping with custom Bilinear...")
     warped_bil, mask_bil = warpImageBilinear(im, H)
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))
@@ -248,6 +245,7 @@ def rectify_image_example():
     axes[2].axis('off')
     
     plt.tight_layout()
+    plt.savefig('rectification_example.png', dpi=150, bbox_inches='tight')
     plt.show()
     
     return warped_nn, warped_bil, mask_nn, mask_bil
@@ -320,7 +318,7 @@ def test_canvas_placement(img1, img2, H_1to2):
     axes[1, 1].axis('off')
     
     plt.tight_layout()
-    plt.savefig('canvas_test.png', dpi=150, bbox_inches='tight')
+    #plt.savefig('canvas_test.png', dpi=150, bbox_inches='tight')
     plt.show()
     
     print(f"\nWarped img1 shape: {warped1.shape}")
@@ -417,7 +415,6 @@ def blend_two_images(img1, img2, H_1to2, accumulator=None):
     
     return result, accumulator
 
-
 def create_panorama_sequential(images, homographies):
     n = len(images)
     ref_idx = n // 2
@@ -426,8 +423,7 @@ def create_panorama_sequential(images, homographies):
     
     panorama = images[ref_idx].copy()
     accumulator = None
-    
-    print("\n=== Adding images to the LEFT ===")
+
     for i in range(ref_idx - 1, -1, -1):
         print(f"Adding image {i} to panorama...")
         
@@ -440,8 +436,7 @@ def create_panorama_sequential(images, homographies):
         if accumulator:
             print(f"  World bounds: x=[{accumulator['min_x']}, {accumulator['min_x']+panorama.shape[1]}], " +
                   f"y=[{accumulator['min_y']}, {accumulator['min_y']+panorama.shape[0]}]")
-    
-    print("\n=== Adding images to the RIGHT ===")
+
     for i in range(ref_idx + 1, n):
         print(f"Adding image {i} to panorama...")
         
