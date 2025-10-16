@@ -228,6 +228,137 @@
             margin-bottom: 25px;
         }
         
+        /* Equation display box */
+        .equation-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .equation-content {
+            display: inline-block;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 1.15em;
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+
+        .equation-content div {
+            white-space: pre;
+        }
+
+        /* Horizontal Image Series Container */
+        .horizontal-series {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+
+        .horizontal-series h4 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.3em;
+        }
+
+        .series-images {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: nowrap;
+        }
+
+        /* Dynamic sizing based on number of images */
+        .series-images.count-4 .series-item {
+            flex: 0 0 calc(25% - 12px);
+            max-width: calc(25% - 12px);
+        }
+
+        .series-images.count-5 .series-item {
+            flex: 0 0 calc(20% - 12px);
+            max-width: calc(20% - 12px);
+        }
+
+        .series-images.count-6 .series-item {
+            flex: 0 0 calc(16.66% - 12px);
+            max-width: calc(16.66% - 12px);
+        }
+
+        .series-item {
+            text-align: center;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .series-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .series-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            display: block;
+        }
+
+        .series-item .label {
+            margin-top: 8px;
+            color: #555;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        /* Result image - spans full width below the series */
+        .series-result {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .series-result h5 {
+            color: #2c3e50;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        .series-result img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 1024px) {
+            .series-images.count-4 .series-item,
+            .series-images.count-5 .series-item,
+            .series-images.count-6 .series-item {
+                flex: 0 0 calc(33.33% - 10px);
+                max-width: calc(33.33% - 10px);
+            }
+            
+            .series-images {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .series-images.count-4 .series-item,
+            .series-images.count-5 .series-item,
+            .series-images.count-6 .series-item {
+                flex: 0 0 calc(50% - 10px);
+                max-width: calc(50% - 10px);
+            }
+        }
         @media (max-width: 768px) {
             .image-comparison {
                 grid-template-columns: 1fr;
@@ -279,9 +410,60 @@
                 </div>
             </div>
 
-            <!-- Part 1: Homography and Image Rectification -->
             <div class="section">
-                <h2>Part 1: Homography and Image Rectification</h2>
+                <h2>Part 1: Raw Pictures</h2>
+                <div class="horizontal-series">
+                    <h4>Set 1: Mt.Rainier</h4>
+                    <div class="series-images count-4">
+                        <div class="series-item">
+                            <img src="media/mosaic_2/DSC_0378.jpg" alt="Image 1">
+                            <div class="label">Image 1</div>
+                        </div>
+                        <div class="series-item">
+                            <img src="media/mosaic_2/DSC_0379.jpg" alt="Image 2">
+                            <div class="label">Image 2</div>
+                        </div>
+                        <div class="series-item">
+                            <img src="media/mosaic_2/DSC_0380.jpg" alt="Image 3">
+                            <div class="label">Image 3</div>
+                        </div>
+                        <div class="series-item">
+                            <img src="media/mosaic_2/DSC_0381.jpg" alt="Image 4">
+                            <div class="label">Image 4</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="horizontal-series">
+                    <h4>Set 2: Seattle City View</h4>
+                    <div class="series-images count-6">
+                        <div class="series-item">
+                            <img src="media/mosaic_1/DSC_0305.jpg" alt="Image 1">
+                            <div class="label">Image 1</div>
+                        </div>
+                        <div class="series-item">
+                            <img src="media/mosaic_1/DSC_0306.jpg" alt="Image 2">
+                            <div class="label">Image 2</div>
+                        </div>
+                        <div class="series-item">
+                            <img src="media/mosaic_1/DSC_0307.jpg" alt="Image 3">
+                            <div class="label">Image 3</div>
+                        </div>
+                        <div class="series-item">
+                            <img src="media/mosaic_1/DSC_0308.jpg" alt="Image 4">
+                            <div class="label">Image 4</div>
+                        </div>
+                        <div class="series-item">
+                            <img src="media/mosaic_1/DSC_0309.jpg" alt="Image 5">
+                            <div class="label">Image 5</div>
+                        </div>
+                        <div class="series-item">
+                            <img src="media/mosaic_1/DSC_0310.jpg" alt="Image 6">
+                            <div class="label">Image 6</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Part 2: Homography and Image Rectification</h2>
                 
                 <div class="overview-box">
                     <h3>Understanding Homography</h3>
@@ -289,25 +471,46 @@
                 </div>
 
                 <h3>1. Mathematical Foundation</h3>
-                
+
                 <div class="algorithm-steps">
                     <h4>Homography Equation</h4>
                     <p>For a point (x, y) in one image and its corresponding point (x', y') in another image, the homography relationship is:</p>
-                    <div style="background: #fff; padding: 15px; border-radius: 5px; margin: 10px 0; text-align: center;">
-                        <p style="font-family: 'Courier New', monospace; font-size: 1.1em; margin: 5px 0;">
-                            ⎡x'⎤     ⎡h₁₁ h₁₂ h₁₃⎤ ⎡x⎤<br>
-                            ⎢y'⎥ = λ ⎢h₂₁ h₂₂ h₂₃⎥ ⎢y⎥<br>
-                            ⎣1 ⎦     ⎣h₃₁ h₃₂ h₃₃⎦ ⎣1⎦
-                        </p>
+                    
+                    <div class="equation-box">
+                        <div class="equation-content">
+                            <div>⎡ x' ⎤       ⎡ h₁₁  h₁₂  h₁₃ ⎤   ⎡ x ⎤</div>
+                            <div>⎢ y' ⎥ = λ · ⎢ h₂₁  h₂₂  h₂₃ ⎥ · ⎢ y ⎥</div>
+                            <div>⎣ 1  ⎦       ⎣ h₃₁  h₃₂  h₃₃ ⎦   ⎣ 1 ⎦</div>
+                        </div>
                     </div>
-                    <p>Where λ is a scaling factor and H is the 3×3 homography matrix with 8 degrees of freedom (h₃₃ = 1).</p>
+                    
+                    <p>Where <strong>λ</strong> is a scaling factor and <strong>H</strong> is the 3×3 homography matrix with 8 degrees of freedom (h₃₃ = 1).</p>
                     
                     <h4>Solving for Homography</h4>
-                    <p>Given n ≥ 4 point correspondences, we can solve for H using a system of linear equations. Each point correspondence provides 2 equations, forming an overdetermined system that can be solved using least squares (SVD).</p>
+                    <p>Given <strong>n ≥ 4</strong> point correspondences, we can solve for H using a system of linear equations. Each point correspondence provides 2 equations, forming an overdetermined system that can be solved using least squares (SVD).</p>
                 </div>
 
-                <h3>2. Image Rectification Test</h3>
-                <p>To verify our homography implementation, we first test on a simple rectification task: transforming a tilted planar surface to appear frontal.</p>
+                <div class="single-image">
+                    <img src="media/correspondence_check.png" alt="Correspondence visualization">
+                    <div class="caption">Point Correspondences</div>
+                </div>
+                <div> 
+                    <p>In this image pair, we compute the following H:</p>
+                    <div class="equation-box">
+                        <div class="equation-content">
+                            <div>    ⎡ 1.04e+00  -1.29e-02  -4.46e+02 ⎤</div>
+                            <div>H = ⎢ 3.45e-02  9.98e-01   -3.20e+01 ⎥</div>
+                            <div>    ⎣ 4.29e-05  -1.41e-05  9.70e-01  ⎦</div>
+                        </div>
+                    </div>
+                    <p>By applying this homography, we can "tilt" other images around a central image.</p>
+                    <div class="single-image">
+                        <img src="media/canvas_test.png" alt="Homography visualization">
+                        <div class="caption">Homography Applied (Rectification_1)</div>
+                    </div>
+                </div>
+                </div>
+                <p>To verify our homography implementation, we can first test on a simple rectification task: transforming a tilted planar surface to appear frontal.</p>
 
                 <div class="image-comparison">
                     <div class="image-item">
@@ -457,7 +660,6 @@
                 </div>
 
                 <h3>4. Comparison: Before and After Optimization</h3>
-                
                 <div class="comparison-container">
                     <h4>Side-by-Side Comparison</h4>
                     <div class="image-comparison">
@@ -472,6 +674,16 @@
                             <div class="caption">Seamless result with no visible artifacts</div>
                         </div>
                     </div>
+                </div>
+
+                <h3>5. More Results</h3>
+                <div class="single-image">
+                    <img src="./media/mosaic_2/panorama_0378_to_0381_pyramid.png" alt="Laplacian Pyramid Panorama" loading="lazy">
+                    <h4>Additional Result 1</h4>
+                </div>
+                <div class="single-image">
+                    <img src="./media/mosaic_3/panorama_0865_to_0866_pyramid.png" alt="Laplacian Pyramid Panorama" loading="lazy">
+                    <h4>Additional Result 2</h4>
                 </div>
 
                 <div class="highlight-box">
@@ -497,34 +709,298 @@
                 </div>
             </div>
 
-            <!-- Progress and Next Steps -->
+            <!-- Part B: Feature Matching for Autostitching -->
             <div class="section">
-                <h2>Current Progress</h2>
+                <h2>Part B: Feature Matching for Autostitching</h2>
                 
-                <div class="progress-note">
-                    <h4>✓ Completed Components</h4>
-                    <ul style="color: #856404; margin-bottom: 0;">
-                        <li>Homography matrix computation and solving</li>
-                        <li>Image rectification and perspective correction</li>
-                        <li>Basic panorama creation from multiple images</li>
-                        <li>Image warping and coordinate transformation</li>
-                        <li>Laplacian pyramid blending implementation</li>
-                        <li>Wedge artifact elimination and seamless stitching</li>
-                    </ul>
+                <div class="overview-box">
+                    <h3>Automatic Feature Detection and Matching</h3>
+                    <p>In Part A, we manually selected correspondence points to compute homographies. Part B automates this process by detecting distinctive corner features, describing them with invariant descriptors, matching them across images, and using RANSAC to robustly estimate homographies. This enables fully automatic panorama stitching.</p>    
                 </div>
 
                 <div class="algorithm-steps">
-                    <h4>Technical Achievements</h4>
+                    <h4>Pipeline Overview</h4>
+                    <ol>
+                        <li><strong>Harris Corner Detection:</strong> Identify distinctive corner points in each image</li>
+                        <li><strong>Adaptive Non-Maximal Suppression (ANMS):</strong> Select a spatially distributed subset of the strongest corners</li>
+                        <li><strong>Feature Descriptor Extraction:</strong> Describe each corner with a normalized 8×8 patch descriptor</li>
+                        <li><strong>Feature Matching:</strong> Find corresponding features between image pairs using nearest neighbor ratios</li>
+                        <li><strong>RANSAC:</strong> Robustly estimate homographies by filtering outlier matches</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- B.1: Harris Corner Detection -->
+            <div class="section">
+                <h2>B.1: Harris Corner Detection</h2>
+                
+                <div class="overview-box">
+                    <h3>Detecting Interest Points</h3>
+                    <p>The Harris corner detector identifies points in an image where intensity changes significantly in multiple directions. These corner points are stable, distinctive features that can be reliably detected across different views of the same scene.</p>    
+                </div>
+
+                <h3>1. Harris Corner Response</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Mathematical Foundation</h4>
+                    <p>For each pixel, we compute the structure tensor (second moment matrix) from image gradients:</p>
+                    
+                    <div class="equation-box">
+                        <div class="equation-content">
+                            <div>M = ⎡ Σ Ix²   Σ IxIy ⎤</div>
+                            <div>    ⎣ Σ IxIy  Σ Iy²  ⎦</div>
+                        </div>
+                    </div>
+                    
+                    <p>The Harris corner response is computed as:</p>
+                    
+                    <div class="equation-box">
+                        <div class="equation-content">
+                            <div>R = det(M) - k × trace(M)²</div>
+                        </div>
+                    </div>
+                    
+                    <p>Where k ≈ 0.04-0.06. Points with large positive R values are corners.</p>
+                </div>
+
+                <h3>2. Detection Results</h3>
+                
+                <div class="image-item">
+                    <img src="media/mosaic_1/DSC_0305_harris_anms.png" alt="Raw Harris Corners" loading="lazy">
+                    <h4>Harris Corners and ANMS Result</h4>
+                    <div class="caption">Thousands of corner points detected across the image using Harris corner detector</div>
+                </div>
+
+                <h3>3. Adaptive Non-Maximal Suppression (ANMS)</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Why ANMS?</h4>
+                    <p>Raw Harris detection produces thousands of corners clustered in high-texture regions. ANMS ensures a spatially distributed set of features by suppressing corners that have stronger corners nearby.</p>
+                    
+                    <h4>Algorithm</h4>
+                    <p>For each corner i with strength fᵢ, compute its suppression radius rᵢ:</p>
+                    
+                    <div class="equation-box">
+                        <div class="equation-content">
+                            <div>rᵢ = min ||xᵢ - xⱼ||  where fⱼ > c_robust × fᵢ</div>
+                        </div>
+                    </div>
+                    
+                    <p>We then select the N corners with largest suppression radii, ensuring spatial distribution.</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>ANMS Benefits</h4>
                     <ul>
-                        <li><strong>Robust Homography:</strong> Successfully computing transformations from point correspondences</li>
-                        <li><strong>Rectification:</strong> Demonstrated ability to correct perspective distortion</li>
-                        <li><strong>Multi-image Mosaicing:</strong> Creating wide-angle panoramas from 6+ images</li>
-                        <li><strong>Advanced Blending:</strong> Implemented multiresolution Laplacian pyramid blending for artifact-free results</li>
-                        <li><strong>Quality Optimization:</strong> Eliminated wedge artifacts and achieved seamless transitions</li>
+                        <li><strong>Spatial Distribution:</strong> Features spread across entire image, not clustered</li>
+                        <li><strong>Improved Matching:</strong> Better coverage of the scene leads to more reliable homography estimation</li>
+                        <li><strong>Efficiency:</strong> Reduces number of features from thousands to hundreds</li>
                     </ul>
                 </div>
             </div>
 
+            <!-- B.2: Feature Descriptor Extraction -->
+            <div class="section">
+                <h2>B.2: Feature Descriptor Extraction</h2>
+                
+                <div class="overview-box">
+                    <h3>Describing Features</h3>
+                    <p>Each detected corner is described by an 8×8 normalized patch extracted from a larger 40×40 window. This descriptor captures the local appearance around the corner in a way that's robust to illumination changes.</p>    
+                </div>
+
+                <h3>1. Descriptor Extraction Process</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Multi-Scale Sampling</h4>
+                    <ol>
+                        <li><strong>Extract 40×40 window:</strong> Large window around each corner point</li>
+                        <li><strong>Apply Gaussian blur:</strong> Smooth the window to reduce noise and aliasing</li>
+                        <li><strong>Subsample to 8×8:</strong> Downsample to create a compact descriptor</li>
+                        <li><strong>Normalize:</strong> Subtract mean and divide by standard deviation for illumination invariance</li>
+                    </ol>
+                </div>
+
+                <div class="algorithm-steps">
+                    <h4>Normalization Formula</h4>
+                    
+                    <div class="equation-box">
+                        <div class="equation-content">
+                            <div>d_normalized = (d - μ) / σ</div>
+                        </div>
+                    </div>
+                    
+                    <p>Where μ is the mean and σ is the standard deviation of the descriptor values.</p>
+                </div>
+
+                <h3>2. Example Descriptors</h3>
+                
+                <p>Below are sample 8×8 feature descriptors extracted from different images in our datasets:</p>
+                
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="media/mosaic_1/DSC_0305_descriptors.png" alt="Descriptors Set 1" loading="lazy">
+                        <h4>Descriptors from Seattle View</h4>
+                        <div class="caption">8×8 descriptors from DSC_0305</div>
+                    </div>
+                    <div class="image-item">
+                        <img src="media/mosaic_2/DSC_0378_descriptors.png" alt="Descriptors Set 2" loading="lazy">
+                        <h4>Descriptors from Mt. Rainier</h4>
+                        <div class="caption">8×8 descriptors from DSC_0378</div>
+                    </div>
+                </div>
+
+                <div class="single-image">
+                    <img src="media/mosaic_3/DSC_0865_descriptors.png" alt="More Descriptors" loading="lazy">
+                    <h4>Additional Descriptor Examples</h4>
+                    <div class="caption" style="max-width: 800px; margin: 15px auto; color: #666;">
+                        8×8 descriptors from DSC_0865 showing variety of local image patches captured around corner points
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>Descriptor Properties</h4>
+                    <ul>
+                        <li><strong>Compact:</strong> Only 64 values per feature (8×8 patch)</li>
+                        <li><strong>Distinctive:</strong> Captures local structure sufficient to distinguish different corners</li>
+                        <li><strong>Robust:</strong> Normalization provides invariance to brightness and contrast changes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- B.3: Feature Matching -->
+            <div class="section">
+                <h2>B.3: Feature Matching</h2>
+                
+                <div class="overview-box">
+                    <h3>Finding Correspondences</h3>
+                    <p>To find matching features between two images, we compare descriptors using the Sum of Squared Differences (SSD). Lowe's ratio test filters out ambiguous matches by requiring that the best match be significantly better than the second-best match.</p>    
+                </div>
+
+                <h3>1. Matching Algorithm</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Lowe's Ratio Test</h4>
+                    <p>For each feature in image 1:</p>
+                    <ol>
+                        <li><strong>Find nearest neighbor:</strong> Feature in image 2 with smallest SSD</li>
+                        <li><strong>Find second nearest neighbor:</strong> Feature with second smallest SSD</li>
+                        <li><strong>Compute ratio:</strong> ratio = SSD₁ / SSD₂</li>
+                        <li><strong>Accept match if:</strong> ratio < threshold (typically 0.6-0.8)</li>
+                    </ol>
+                    
+                    <p>This test rejects matches where the best match is not distinctly better than alternatives, reducing false positives.</p>
+                </div>
+
+                <h3>2. Matching Results</h3>
+                
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="media/mosaic_1/DSC_0305_DSC_0306_matches.png" alt="Matches 1" loading="lazy">
+                        <h4>Feature Matches: Images 0305-0306</h4>
+                        <div class="caption">Matched features between consecutive images in Seattle view sequence</div>
+                    </div>
+                </div>
+
+                <div class="algorithm-steps">
+                    <h4>Matching Statistics</h4>
+                    <ul>
+                        <li><strong>Initial features:</strong> ~500 per image (after ANMS)</li>
+                        <li><strong>Putative matches:</strong> ~100-200 pairs (after ratio test)</li>
+                        <li><strong>Outlier rate:</strong> 10-30% incorrect matches typical</li>
+                        <li><strong>Solution:</strong> Use RANSAC to filter outliers</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- B.4: RANSAC for Robust Homography -->
+            <div class="section">
+                <h2>B.4: RANSAC for Robust Homography Estimation</h2>
+                
+                <div class="overview-box">
+                    <h3>Filtering Outliers</h3>
+                    <p>RANSAC (RANdom SAmple Consensus) is a robust estimation algorithm that can compute accurate homographies even when 10-30% of matches are incorrect. It works by repeatedly sampling minimal subsets, computing candidate homographies, and selecting the one with most inlier support.</p>    
+                </div>
+
+                <h3>1. RANSAC Algorithm</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>4-Point RANSAC for Homography</h4>
+                    <ol>
+                        <li><strong>Repeat N iterations:</strong> (typically 1000-5000)
+                            <ul>
+                                <li>Randomly select 4 point correspondences</li>
+                                <li>Compute homography H from these 4 points</li>
+                                <li>Count inliers: matches with reprojection error < threshold (e.g., 3 pixels)</li>
+                                <li>If this is the best model so far, save it</li>
+                            </ul>
+                        </li>
+                        <li><strong>Refit with all inliers:</strong> Use all inlier correspondences from best model to compute final H</li>
+                    </ol>
+                </div>
+
+                <div class="algorithm-steps">
+                    <h4>Inlier Test</h4>
+                    <p>A match (x₁, x₂) is an inlier if:</p>
+                    
+                    <div class="equation-box">
+                        <div class="equation-content">
+                            <div>||x₂ - H × x₁|| < ε</div>
+                        </div>
+                    </div>
+                    
+                    <p>Where ε is typically 3-5 pixels.</p>
+                </div>
+
+                <h3>3. Automatic vs Manual Stitching Comparison</h3>
+                
+                <div class="comparison-container">
+                    <h4>Mosaic 1: Seattle City View - Manual vs Automatic</h4>
+                    <div class="image-comparison">
+                        <div class="image-item">
+                            <img src="media/mosaic_1/panorama_0305_to_0310_pyramid.png" alt="Manual Stitching 1" loading="lazy">
+                            <h4>Manual Correspondence Selection</h4>
+                            <div class="caption">Part A result using manually selected correspondences</div>
+                        </div>
+                        <div class="image-item">
+                            <img src="media/mosaic_1/automatic_panorama_0305_to_0310.png" alt="Automatic Stitching 1" loading="lazy">
+                            <h4>Automatic Feature Matching (RANSAC)</h4>
+                            <div class="caption">Part B result using automatic feature detection and RANSAC</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-container">
+                    <h4>Mosaic 2: Mt. Rainier - Manual vs Automatic</h4>
+                    <div class="image-comparison">
+                        <div class="image-item">
+                            <img src="media/mosaic_2/panorama_0378_to_0381_pyramid.png" alt="Manual Stitching 2" loading="lazy">
+                            <h4>Manual Correspondence Selection</h4>
+                            <div class="caption">Part A result using manually selected correspondences</div>
+                        </div>
+                        <div class="image-item">
+                            <img src="media/mosaic_2/automatic_panorama_0305_to_0310.png" alt="Automatic Stitching 2" loading="lazy">
+                            <h4>Automatic Feature Matching (RANSAC)</h4>
+                            <div class="caption">Part B result using automatic feature detection and RANSAC</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-container">
+                    <h4>Mosaic 3: Additional Scene - Manual vs Automatic</h4>
+                    <div class="image-comparison">
+                        <div class="image-item">
+                            <img src="media/mosaic_3/panorama_0865_to_0866_pyramid.png" alt="Manual Stitching 3" loading="lazy">
+                            <h4>Manual Correspondence Selection</h4>
+                            <div class="caption">Part A result using manually selected correspondences</div>
+                        </div>
+                        <div class="image-item">
+                            <img src="media/mosaic_3/automatic_panorama_0865_to_0866.png" alt="Automatic Stitching 3" loading="lazy">
+                            <h4>Automatic Feature Matching (RANSAC)</h4>
+                            <div class="caption">Part B result using automatic feature detection and RANSAC</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>

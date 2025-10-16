@@ -46,7 +46,9 @@ def computeH(im1_pts, im2_pts):
         [h[6], h[7], 1.0]
     ])
     H = np.linalg.inv(T2) @ H_norm @ T1
-    
+    print("\nComputed Homography Matrix H:")
+    print(H)
+    print()
     return H
 
 def load_and_compute_homography(correspondence_data):
@@ -55,7 +57,7 @@ def load_and_compute_homography(correspondence_data):
     im2_pts = np.array(correspondence_data['im2Points'])
     
     H = computeH(im1_pts, im2_pts)
-    
+
     return H
 
 def warpImageNearestNeighbor(im, H, output_shape=None):
@@ -295,35 +297,27 @@ def test_canvas_placement(img1, img2, H_1to2):
     mask1_bool = mask1 > 0
     canvas_both[mask1_bool] = warped1[mask1_bool]
     
-    fig, axes = plt.subplots(2, 2, figsize=(20, 16))
-    axes[0, 0].imshow(canvas_img2)
-    axes[0, 0].set_title('Canvas with img2 only (reference position)', fontsize=14)
-    axes[0, 0].axhline(offset_y, color='r', linestyle='--', alpha=0.5)
-    axes[0, 0].axhline(offset_y + h2, color='r', linestyle='--', alpha=0.5)
-    axes[0, 0].axvline(offset_x, color='r', linestyle='--', alpha=0.5)
-    axes[0, 0].axvline(offset_x + w2, color='r', linestyle='--', alpha=0.5)
-    axes[0, 0].axis('off')
+    fig, axes = plt.subplots(1, 3, figsize=(12, 18))
     
-    axes[0, 1].imshow(canvas_img1)
-    axes[0, 1].set_title('Canvas with warped img1 only', fontsize=14)
-    axes[0, 1].axis('off')
+    axes[0].imshow(canvas_img2)
+    axes[0].set_title('Canvas with img2 only (reference position)', fontsize=14)
+    axes[0].axhline(offset_y, color='r', linestyle='--', alpha=0.5)
+    axes[0].axhline(offset_y + h2, color='r', linestyle='--', alpha=0.5)
+    axes[0].axvline(offset_x, color='r', linestyle='--', alpha=0.5)
+    axes[0].axvline(offset_x + w2, color='r', linestyle='--', alpha=0.5)
+    axes[0].axis('off')
     
-    axes[1, 0].imshow(canvas_both)
-    axes[1, 0].set_title('Both images (img1 overwrites img2)', fontsize=14)
-    axes[1, 0].axis('off')
-
-    overlap = (mask1 > 0) & (canvas_img2.sum(axis=2) > 0)
-    axes[1, 1].imshow(overlap, cmap='gray')
-    axes[1, 1].set_title('Overlap region (white)', fontsize=14)
-    axes[1, 1].axis('off')
+    axes[1].imshow(canvas_img1)
+    axes[1].set_title('Canvas with warped img1 only', fontsize=14)
+    axes[1].axis('off')
+    
+    axes[2].imshow(canvas_both)
+    axes[2].set_title('Both images (img1 overwrites img2)', fontsize=14)
+    axes[2].axis('off')
     
     plt.tight_layout()
-    #plt.savefig('canvas_test.png', dpi=150, bbox_inches='tight')
+    plt.savefig('canvas_test.png', dpi=150, bbox_inches='tight')
     plt.show()
-    
-    print(f"\nWarped img1 shape: {warped1.shape}")
-    print(f"Valid pixels in img1: {np.sum(mask1 > 0)}")
-    print(f"Overlap pixels: {np.sum(overlap)}")
     
     return canvas_both
 
@@ -489,9 +483,6 @@ def load_panorama_data(base_path, image_numbers):
 
 def create_panorama_from_data(base_path, image_numbers, output_name='panorama'):
     images, homographies = load_panorama_data(base_path, image_numbers)
-
-    print("CREATING PANORAMA")
-    
     panorama = create_panorama_sequential(images, homographies)
 
     plt.figure(figsize=(24, 8))
@@ -502,7 +493,6 @@ def create_panorama_from_data(base_path, image_numbers, output_name='panorama'):
     
     output_path = os.path.join(base_path, f'{output_name}.png')
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"\nSaved panorama to: {output_path}")
     plt.show()
     
     return panorama
