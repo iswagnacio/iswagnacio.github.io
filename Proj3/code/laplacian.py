@@ -3,7 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 import json
 import os
-from scipy.ndimage import distance_transform_edt
+from scipy.ndimage import distance_transform_edt, gaussian_filter
 
 def computeH(im1_pts, im2_pts):
     N = im1_pts.shape[0]
@@ -50,12 +50,9 @@ def computeH(im1_pts, im2_pts):
     return H
 
 def load_and_compute_homography(correspondence_data):
-
     im1_pts = np.array(correspondence_data['im1Points'])
     im2_pts = np.array(correspondence_data['im2Points'])
-    
     H = computeH(im1_pts, im2_pts)
-    
     return H
 
 def warpImageNearestNeighbor(im, H, output_shape=None):
@@ -198,7 +195,6 @@ def warpImageBilinear(im, H, output_shape=None):
     return warped, mask
 
 def load_panorama_data(base_path, image_numbers):
-
     images = []
     homographies = []
 
@@ -209,7 +205,6 @@ def load_panorama_data(base_path, image_numbers):
             raise FileNotFoundError(f"Could not load {img_path}")
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         images.append(img)
-        print(f"Loaded DSC_0{num}.jpg: {img.shape}")
     
     for i in range(len(image_numbers) - 1):
         num1 = image_numbers[i]
@@ -225,18 +220,71 @@ def load_panorama_data(base_path, image_numbers):
         
         H = computeH(im1_pts, im2_pts)
         homographies.append(H)
-        
-        print(f"Computed H: DSC_0{num1} -> DSC_0{num2}")
-    
-    print(f"\nTotal: {len(images)} images, {len(homographies)} homographies")
     
     return images, homographies
 
+def gaussian_blur_image(image, sigma=1.0):
+    if len(image.shape) == 3:
+        blurred = np.zeros_like(image, dtype=np.float64)
+        for c in range(image.shape[2]):
+            blurred[:, :, c] = gaussian_filter(image[:, :, c], sigma=sigma)
+        return blurred
+    else:
+        return gaussian_filter(image, sigma=sigma)
+
+def downsample_image(image):
+    return image[::2, ::2]
+
+def upsample_image(image, target_shape):
+    h_src, w_src = image.shape[:2]
+    h_dst, w_dst = target_shape
+    
+    if len(image.shape) == 3:
+        upsampled = np.zeros((h_dst, w_dst, image.shape[2]), dtype=image.dtype)
+    else:
+        upsampled = np.zeros((h_dst, w_dst), dtype=image.dtype)
+    
+    for y_dst in range(h_dst):
+        for x_dst in range(w_dst):
+            y_src = y_dst / 2.0
+            x_src = x_dst / 2.0
+            
+            y0 = int(np.floor(y_src))
+            x0 = int(np.floor(x_src))
+            y1 = min(y0 + 1, h_src - 1)
+            x1 = min(x0 + 1, w_src - 1)
+            
+            wy = y_src - y0
+            wx = x_src - x0
+            
+            if len(image.shape) == 3:
+                for c in range(image.shape[2]):
+                    upsampled[y_dst, x_dst, c] = (
+                        (1 - wy) * (1 - wx) * image[y0, x0, c] +
+                        (1 - wy) * wx * image[y0, x1, c] +
+                        wy * (1 - wx) * image[y1, x0, c] +
+                        wy * wx * image[y1, x1, c]
+                    )
+            else:
+                upsampled[y_dst, x_dst] = (
+                    (1 - wy) * (1 - wx) * image[y0, x0] +
+                    (1 - wy) * wx * image[y0, x1] +
+                    wy * (1 - wx) * image[y1, x0] +
+                    wy * wx * image[y1, x1]
+                )
+    
+    return upsampled
+
 def build_gaussian_pyramid(image, levels):
     pyramid = [image.astype(np.float64)]
+    current = image.astype(np.float64)
+    
     for i in range(levels - 1):
-        image = cv2.pyrDown(pyramid[-1])
-        pyramid.append(image)
+        blurred = gaussian_blur_image(current, sigma=1.0)
+        downsampled = downsample_image(blurred)
+        pyramid.append(downsampled)
+        current = downsampled
+    
     return pyramid
 
 def build_laplacian_pyramid(image, levels):
@@ -244,22 +292,21 @@ def build_laplacian_pyramid(image, levels):
     laplacian_pyramid = []
     
     for i in range(levels - 1):
-        upsampled = cv2.pyrUp(gaussian_pyramid[i + 1])
         h, w = gaussian_pyramid[i].shape[:2]
-        upsampled = upsampled[:h, :w]
+        upsampled = upsample_image(gaussian_pyramid[i + 1], (h, w))
         laplacian = gaussian_pyramid[i] - upsampled
         laplacian_pyramid.append(laplacian)
     
     laplacian_pyramid.append(gaussian_pyramid[-1])
+    
     return laplacian_pyramid
 
 def reconstruct_from_laplacian_pyramid(laplacian_pyramid):
     image = laplacian_pyramid[-1]
     
     for i in range(len(laplacian_pyramid) - 2, -1, -1):
-        image = cv2.pyrUp(image)
-        h, w = laplacian_pyramid[i].shape[:2]
-        image = image[:h, :w]
+        target_h, target_w = laplacian_pyramid[i].shape[:2]
+        image = upsample_image(image, (target_h, target_w))
         image = image + laplacian_pyramid[i]
     
     return image
@@ -304,7 +351,6 @@ def blend_two_images_pyramid(img1, img2, H_1to2, accumulator=None, pyramid_level
     warped_corners1 = warped_corners1 / warped_corners1[2, :]
     
     if accumulator is None:
-        # First pair
         corners2 = np.array([[0, 0], [w2, 0], [w2, h2], [0, h2]])
         all_x = np.concatenate([warped_corners1[0, :], corners2[:, 0]])
         all_y = np.concatenate([warped_corners1[1, :], corners2[:, 1]])
@@ -328,7 +374,6 @@ def blend_two_images_pyramid(img1, img2, H_1to2, accumulator=None, pyramid_level
         mask2[img2_y:img2_y+h2, img2_x:img2_x+w2] = 255
         
     else:
-        # Expand canvas
         old_h, old_w = accumulator['image'].shape[:2]
         old_min_x = accumulator['min_x']
         old_min_y = accumulator['min_y']
@@ -382,8 +427,6 @@ def create_panorama_sequential_pyramid(images, homographies, pyramid_levels=4):
     accumulator = None
 
     for i in range(ref_idx - 1, -1, -1):
-        print(f"Adding image {i}")
-        
         H_composed = np.eye(3)
         for j in range(i, ref_idx):
             H_composed = homographies[j] @ H_composed
@@ -391,14 +434,8 @@ def create_panorama_sequential_pyramid(images, homographies, pyramid_levels=4):
         panorama, accumulator = blend_two_images_pyramid(
             images[i], panorama, H_composed, accumulator, pyramid_levels
         )
-        print(f"  Panorama size: {panorama.shape}")
-        if accumulator:
-            print(f"  World bounds: x=[{accumulator['min_x']}, {accumulator['min_x']+panorama.shape[1]}], " +
-                  f"y=[{accumulator['min_y']}, {accumulator['min_y']+panorama.shape[0]}]")
 
     for i in range(ref_idx + 1, n):
-        print(f"Adding image {i}")
-        
         H_composed = np.eye(3)
         for j in range(i - 1, ref_idx - 1, -1):
             H_composed = H_composed @ np.linalg.inv(homographies[j])
@@ -406,10 +443,6 @@ def create_panorama_sequential_pyramid(images, homographies, pyramid_levels=4):
         panorama, accumulator = blend_two_images_pyramid(
             images[i], panorama, H_composed, accumulator, pyramid_levels
         )
-        print(f"  Panorama size: {panorama.shape}")
-        if accumulator:
-            print(f"  World bounds: x=[{accumulator['min_x']}, {accumulator['min_x']+panorama.shape[1]}], " +
-                  f"y=[{accumulator['min_y']}, {accumulator['min_y']+panorama.shape[0]}]")
     
     return panorama
 
@@ -425,7 +458,6 @@ def create_panorama_from_data_pyramid(base_path, image_numbers, output_name='pan
     
     output_path = os.path.join(base_path, f'{output_name}.png')
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"\nSaved panorama to: {output_path}")
     plt.show()
     
     return panorama
