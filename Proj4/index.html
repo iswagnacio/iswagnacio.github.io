@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 4 - Neural Radiance Fields</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+        
+        .container {
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .content {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .section h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            margin-top: 30px;
+        }
+        
+        .section h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .section p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .overview-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .overview-box h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .algorithm-steps {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        .algorithm-steps h4 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .algorithm-steps ul, .algorithm-steps ol {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .algorithm-steps li {
+            margin-bottom: 10px;
+        }
+        
+        .image-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .image-item {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .image-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .image-item img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 0px;
+            box-shadow: none;
+        }
+        
+        .image-item video {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 0px;
+            box-shadow: none;
+        }
+        
+        .image-item h3, .image-item h4 {
+            margin: 10px 5px 10px 5px;
+            color: #2c3e50;
+            font-size: 1em;
+            font-weight: normal;
+        }
+        
+        .image-item .caption {
+            color: #666;
+            font-style: italic;
+            line-height: 1.4;
+            font-size: 0.8em;
+            margin: 10px 5px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .result-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .result-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .result-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .result-info {
+            padding: 15px;
+        }
+        
+        .result-info h4 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 1em;
+        }
+        
+        .result-info .param-info {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            color: #666;
+            background: #f8f9fa;
+            padding: 5px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .four-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .single-image {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .single-image img {
+            max-width: 100%;
+            width: 800px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .single-video {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .single-video video {
+            max-width: 100%;
+            width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .model-architecture {
+            background: #f1f3f4;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .model-architecture h4 {
+            margin-top: 0;
+            color: #c0392b;
+        }
+        
+        .model-architecture ul {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .implementation-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .implementation-box h4 {
+            margin-top: 0;
+            color: #2d8659;
+        }
+        
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            .image-comparison, .four-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-link">← Back to Portfolio</a>
+            <h1>Project 4</h1>
+            <div class="subtitle">Neural Radiance Fields</div>
+        </div>
+        
+        <div class="content">
+            
+            <!-- Introduction -->
+            <div class="section">
+                <h2>Project Overview</h2>
+                
+                <div class="overview-box">
+                    <h3>Goal</h3>
+                    <p>This project explores Neural Radiance Fields (NeRF), a powerful technique for 3D scene reconstruction and novel view synthesis. I implement neural networks that can learn to represent scenes as continuous functions, enabling the generation of photorealistic images from previously unseen viewpoints.</p>
+                    
+                    <p>The project consists of three main parts: camera calibration and 3D scanning, fitting a neural field to 2D images, and implementing a full Neural Radiance Field for multi-view 3D reconstruction.</p>
+                </div>
+            </div>
+
+            <!-- Part 0: Camera Calibration -->
+            <div class="section">
+                <h2>Part 0: Camera Calibration and 3D Scanning</h2>
+                
+                <p>In this section, we calibrate our camera parameters using ArUco tags and estimate camera poses for creating our own 3D dataset. This provides the foundation for training NeRF on custom captured scenes.</p>
+                
+                <div class="algorithm-steps">
+                    <h4>Implementation Steps</h4>
+                    <ol>
+                        <li>Capture 30-50 calibration images of ArUco tags from varying angles and distances</li>
+                        <li>Detect ArUco tags using OpenCV's detector and extract corner coordinates</li>
+                        <li>Use cv2.calibrateCamera() to compute camera intrinsics and distortion coefficients</li>
+                        <li>Estimate camera poses using cv2.solvePnP() for each image</li>
+                        <li>Visualize camera frustums in 3D using Viser</li>
+                        <li>Undistort images and package dataset in .npz format</li>
+                    </ol>
+                </div>
+                
+                <h3>Camera Frustum Visualization</h3>
+                <p>The following screenshots show the camera frustums visualization in Viser, displaying the estimated camera poses and captured images:</p>
+                
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="Media/part0_1.png" alt="Camera Frustums View 1">
+                        <h4>Camera Frustums - View 1</h4>
+                        <div class="caption">3D visualization showing camera poses and captured images</div>
+                    </div>
+                    <div class="image-item">
+                        <img src="Media/part0_2.png" alt="Camera Frustums View 2">
+                        <h4>Camera Frustums - View 2</h4>
+                        <div class="caption">Alternative view of the camera frustums arrangement</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 1: Neural Field for 2D Images -->
+            <div class="section">
+                <h2>Part 1: Fit a Neural Field to a 2D Image</h2>
+                
+                <p>This section introduces the core concept of neural fields by fitting a simple MLP to represent a 2D image as a continuous function mapping pixel coordinates to RGB values.</p>
+                
+                <div class="model-architecture">
+                    <h4>Model Architecture</h4>
+                    <ul>
+                        <li><strong>Number of Layers:</strong> 3 hidden layers + 1 output layer</li>
+                        <li><strong>Hidden Layer Width:</strong> 256 neurons per layer</li>
+                        <li><strong>Learning Rate:</strong> 1e-2 (0.01)</li>
+                        <li><strong>Optimizer:</strong> Adam</li>
+                        <li><strong>Loss Function:</strong> Mean Squared Error (MSE)</li>
+                        <li><strong>Positional Encoding:</strong> Sinusoidal, max frequency L=10 (default)</li>
+                        <li><strong>Training Iterations:</strong> 3000 iterations</li>
+                        <li><strong>Batch Size:</strong> 10,000 pixels per batch</li>
+                        <li><strong>Activation Function:</strong> ReLU (hidden layers), Sigmoid (output)</li>
+                        <li><strong>PE Output Dimension:</strong> 42D (2D input → 2 + 2×11×2 = 42)</li>
+                    </ul>
+                </div>
+                
+                <h3>Training Progression</h3>
+                <p>The following visualizations show the training progression on both the provided test image and a custom image:</p>
+                
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="Media/fox_training_progression.png" alt="Training Progression - Fox">
+                        <h4>Training Progression - Test Image (Fox)</h4>
+                        <div class="caption">Neural field learning to represent the fox image over iterations</div>
+                    </div>
+                    <div class="image-item">
+                        <img src="Media/2_training_progression.png" alt="Training Progression - Custom">
+                        <h4>Training Progression - Custom Image</h4>
+                        <div class="caption">Neural field fitting on a custom selected image</div>
+                    </div>
+                </div>
+                
+                <h3>Hyperparameter Comparison</h3>
+                <p>Results showing the effect of different max positional encoding frequencies and network widths:</p>
+                
+                <div class="image-item">
+                    <img src="Media/2_hyperparameter_grid_2x2.png" alt="High Frequency, High Width">
+                    <h4>Hyperparameters Comparison</h4>
+                </div>
+                
+                <h3>Training Metrics</h3>
+                <div class="single-image">
+                    <img src="Media/2_psnr_curve.png" alt="PSNR Training Curve">
+                    <h4>PSNR vs Training Iterations</h4>
+                    <div class="caption">Peak Signal-to-Noise Ratio improvement during neural field training</div>
+                </div>
+            </div>
+
+            <!-- Part 2: Neural Radiance Field -->
+            <div class="section">
+                <h2>Part 2: Fit a Neural Radiance Field from Multi-view Images</h2>
+                
+                <p>In this section, we implement a full Neural Radiance Field that learns to represent 3D scenes from multiple 2D views, enabling novel view synthesis.</p>
+                
+                <div class="implementation-box">
+                    <h4>Implementation Description</h4>
+                        <p><strong>Ray Generation:</strong> Converts pixel coordinates to 3D rays using camera intrinsics and extrinsics. The pixel_to_ray function transforms 2D pixel coordinates to camera coordinates using the inverse intrinsic matrix K⁻¹, then applies the camera-to-world transformation to get ray origins and directions in world space.</p>
+                        
+                        <p><strong>Point Sampling:</strong> Samples points along rays using stratified sampling between near (2.0) and far (6.0) bounds. The sample_points_from_rays method divides each ray into 64 equally-spaced intervals and optionally adds random perturbations within each interval to reduce aliasing artifacts.</p>
+                        
+                        <p><strong>Volume Rendering:</strong> Implements the discrete volume rendering equation using the volrend function. Computes alpha values α_i = 1 - exp(-σ_i * δ_i) and transmittance T_i = exp(-Σ_{j=1}^{i-1} σ_j * δ_j), then integrates colors as Σ T_i * α_i * c_i along each ray to produce the final pixel color.</p>
+                        
+                        <p><strong>Loss Function:</strong> Uses Mean Squared Error (MSE) loss between predicted RGB values and ground truth pixel colors. The training loop samples random rays, predicts colors through the NeRF network and volume rendering, then backpropagates the photometric reconstruction error to optimize the neural network parameters.</p>
+                </div>
+                
+                <h3>Ray and Sample Visualization</h3>
+                <div class="single-image">
+                    <img src="Media\part25ray.png" alt="Rays and Samples Visualization">
+                    <h4>Visualization of Rays and Samples with Cameras</h4>
+                    <div class="caption">Up to 100 rays shown with sampling points along each ray</div>
+                </div>
+                
+                <h3>Training Progression</h3>
+                <p>The following shows how the NeRF learns to reconstruct the scene over only 601 training iterations:</p>
+                
+                <div class="single-image">
+                    <img src="Media\lego_training_loss.png" alt="NeRF Training Progression">
+                    <h4>NeRF Training Progression</h4>
+                    <div class="caption">Predicted images improving across training iterations</div>
+                </div>
+                
+                <h3>Validation Metrics</h3>
+                <div class="single-image">
+                    <img src="Media\lego_psnr.png" alt="Validation PSNR">
+                    <h4>PSNR on Validation Set</h4>
+                    <div class="caption">Peak Signal-to-Noise Ratio on validation images during training</div>
+                </div>
+                
+                <h3>Novel View Synthesis</h3>
+                <div class="single-image">
+                    <img src="Media\lego.gif" alt="Spherical Rendering of Lego Scene">
+                    <h4>Spherical Rendering of Lego Scene</h4>
+                    <div class="caption">Novel view synthesis using provided test cameras</div>
+                </div>
+                
+                <h3>Rendering Process</h3>
+                <div class="image-item">
+                    <img src="Media\lego_progress.png" alt="Rendering Process">
+                    <h4>Intermediate Renders During Training</h4>
+                    <div class="caption">Scene reconstruction quality at different training stages</div>
+                </div>
+            </div>
+
+            <!-- Part 2.6: Training with Your Own Data -->
+            <div class="section">
+                <h2>Part 2.6: Training with Your Own Data</h2>
+                
+                <p>Here I apply NeRF to our own captured dataset, demonstrating the pipeline from camera calibration to novel view synthesis.</p>
+                
+                <div class="implementation-box">
+                    <h4>Code and Hyperparameter Changes</h4>
+                    <p>To account for the less descriptive and complicate dataset, I make the following adjustments to the hyperparameters:</p>
+                    <ul>
+                        <li>PE_pos: 6</li>
+                        <li>PE_dir: 3</li>
+                        <li>batch: 4096</li>
+                        <li>lr: 5e-4</li>
+                        <li>num_iterations: 6200</li>
+                        <li>sample size: 128</li>
+                        <li>hidden dimension: 512</li>
+                    </ul>
+                </div>
+                
+                <h3>Novel View Results</h3>
+                <div class="single-image">
+                    <img src="Media\nerf_render_x_axis.gif" alt="Novel Views of Custom Object">
+                    <h4>Camera Circling Custom Object</h4>
+                    <div class="caption">GIF showing novel views generated by NeRF of our captured object</div>
+                </div>
+                
+                <h3>Training Analysis</h3>
+                <div class="image-comparison">
+                    <div class="image-item">
+                        <img src="Media\Training loss.png" alt="Training Loss Plot">
+                        <h4>Training Loss Over Iterations</h4>
+                        <div class="caption">Loss curve showing convergence during custom data training</div>
+                    </div>
+                    <div class="image-item">
+                        <img src="Media\PSNR.png" alt="PSNR Plot">
+                        <h4>PSNR Over Iterations</h4>
+                        <div class="caption">Validation PSNR showing convergence during custom data training</div>
+                    </div>
+                </div>
+
+                <h3>Rendering Process</h3>
+                <div class="image-item">
+                    <img src="Media\Render Process.png" alt="Rendering Process">
+                    <h4>Intermediate Renders During Training</h4>
+                    <div class="caption">Scene reconstruction quality at different training stages</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
