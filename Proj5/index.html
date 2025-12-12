@@ -234,6 +234,17 @@
 
         <div class="section">
             <h3>1.1 Implementing the Forward Process</h3>
+            
+            <p>
+                <strong>Implementation:</strong> The forward process adds noise according to the equation 
+                <code>x_t = √(α̅_t) * x_0 + √(1 - α̅_t) * ε</code>. I implemented this by:
+            </p>
+            <ul>
+                <li>Extracting <code>alpha_cumprod_t</code> from the precomputed alphas_cumprod array</li>
+                <li>Generating random Gaussian noise using <code>torch.randn_like(im)</code></li>
+                <li>Combining the scaled clean image and scaled noise as specified in the equation</li>
+            </ul>
+            
             <div class="image-container">
                 <img src="Media/5a1.1.png" alt="Forward process">
                 <div class="image-caption">Forward process</div>
@@ -258,6 +269,18 @@
 
         <div class="section">
             <h3>1.4 Iterative Denoising</h3>
+            
+            <p>
+                <strong>Implementation:</strong> The iterative denoising process uses the DDPM update equation. Key steps:
+            </p>
+            <ul>
+                <li>For each timestep, compute <code>alpha</code> and <code>beta</code> from cumulative alphas</li>
+                <li>Get noise estimate from UNet at current timestep t</li>
+                <li>Compute predicted clean image: <code>x_0 = (x_t - √(1-α̅_t)*ε) / √(α̅_t)</code></li>
+                <li>Update to next timestep using: <code>x_t' = (√(α̅_t')*β*x_0 + √(α)*(1-α̅_t')*x_t) / (1-α̅_t)</code></li>
+                <li>Add variance for stochasticity</li>
+            </ul>
+            
             <div class="image-container">
                 <img src="Media/5a1.4.png" alt="Iterative Denoising">
                 <div class="image-caption">Iterative Denoising</div>
@@ -274,6 +297,17 @@
 
         <div class="section">
             <h3>1.6 Classifier-Free Guidance (CFG)</h3>
+            
+            <p>
+                <strong>Implementation:</strong> CFG improves sample quality by combining conditional and unconditional noise estimates:
+            </p>
+            <ul>
+                <li>Run UNet twice: once with text prompt (conditional) and once with empty prompt (unconditional)</li>
+                <li>Compute CFG noise estimate: <code>ε_cfg = ε_uncond + scale * (ε_cond - ε_uncond)</code></li>
+                <li>Use this combined noise estimate in the DDPM update step</li>
+                <li>Higher guidance scale amplifies the effect of the text prompt</li>
+            </ul>
+            
             <h4>CFG with different guidance scales</h4>
             <div class="image-container">
                 <img src="Media/5a1.6.png" alt="Classifier-Free Guidance">
@@ -311,6 +345,17 @@
             </div>
 
             <h4>1.7.2 Inpainting</h4>
+            
+            <p>
+                <strong>Implementation:</strong> Inpainting fills masked regions while preserving unmasked areas:
+            </p>
+            <ul>
+                <li>Start with random noise for the entire image</li>
+                <li>At each denoising step, perform standard CFG denoising</li>
+                <li>After each step, replace unmasked regions with the original image (with appropriate noise): 
+                    <code>x_t = mask * x_t + (1-mask) * forward(x_orig, t)</code></li>
+                <li>This constrains unmasked pixels while allowing masked regions to be generated freely</li>
+            </ul>
             
             <div class="image-row">
                 <div class="image-container">
@@ -358,6 +403,17 @@
         <div class="section">
             <h3>1.8 Visual Anagrams</h3>
             
+            <p>
+                <strong>Implementation:</strong> Creates images that look different when flipped by averaging noise estimates:
+            </p>
+            <ul>
+                <li>At each timestep, compute noise estimate ε₁ with prompt p₁ for normal image</li>
+                <li>Flip the image, compute noise estimate ε₂ with prompt p₂, then flip ε₂ back</li>
+                <li>Average the two noise estimates: <code>ε = (ε₁ + ε₂) / 2</code></li>
+                <li>Use this averaged noise for the DDPM update step</li>
+                <li>Result is an image optimized to look like both prompts in different orientations</li>
+            </ul>
+            
             <div class="image-row">
                 <div class="image-container">
                     <img src="Media/5a1.8_1.png" alt="Anagram normal">
@@ -375,6 +431,17 @@
 
         <div class="section">
             <h3>1.9 Hybrid Images</h3>
+            
+            <p>
+                <strong>Implementation:</strong> Combines low and high frequency content from two different prompts:
+            </p>
+            <ul>
+                <li>Compute noise estimates ε₁ and ε₂ for two different prompts</li>
+                <li>Apply Gaussian blur to ε₁ to extract low frequencies (kernel_size=33, sigma=2)</li>
+                <li>Subtract blurred version of ε₂ from ε₂ to get high frequencies</li>
+                <li>Combine: <code>ε = low_freq(ε₁) + high_freq(ε₂)</code></li>
+                <li>Use this hybrid noise estimate in the denoising step</li>
+            </ul>
             
             <div class="image-row">
                 <div class="image-container">
@@ -396,6 +463,19 @@
 
         <div class="section">
             <h3>Part 1: Training a Single-Step Denoising UNet</h3>
+
+            <h4>1.1 Implementing the UNet</h4>
+            
+            <p>
+                <strong>Implementation:</strong> Built a UNet with encoder-decoder architecture:
+            </p>
+            <ul>
+                <li>Encoder: ConvBlock → DownBlock (D channels) → DownBlock (2D channels) → Flatten</li>
+                <li>Bottleneck: Unflatten to restore spatial dimensions</li>
+                <li>Decoder: UpBlock (2D→D) → UpBlock (2D→D) with skip connections</li>
+                <li>Skip connections: Concatenate encoder features with decoder features at matching resolutions</li>
+                <li>Each block uses Conv2d + BatchNorm + GELU activation</li>
+            </ul>
 
             <h4>1.2 Using the UNet to Train a Denoiser</h4>
             <div class="image-container">
@@ -477,6 +557,23 @@
 
         <div class="section">
             <h3>Part 2: Training a Diffusion Model</h3>
+
+            <h4>2.1 Adding Time Conditioning to UNet</h4>
+            
+            <p>
+                <strong>Implementation:</strong> Extended UNet to accept time conditioning:
+            </p>
+            <ul>
+                <li>Added two FCBlocks (fc1_t and fc2_t) to process normalized time input t ∈ [0,1]</li>
+                <li>Time embeddings are injected at two points in the decoder:
+                    <ul>
+                        <li>After unflatten: <code>x = x + t1</code></li>
+                        <li>After first upblock: <code>x = x + t2</code></li>
+                    </ul>
+                </li>
+                <li>FCBlock architecture: Linear → GELU → Linear for learning time representations</li>
+                <li>Time is reshaped to (N, C, 1, 1) for broadcasting across spatial dimensions</li>
+            </ul>
 
             <h4>2.2 Training the Time-Conditioned UNet</h4>
             <div class="image-row">
