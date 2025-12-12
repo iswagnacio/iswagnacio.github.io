@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS180 Project 5: Diffusion Models</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #003262;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #003262;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #003262;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #FDB515;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: #003262;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .image-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .image-container {
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .image-caption {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .note {
+            background-color: #e7f3ff;
+            border-left: 4px solid #003262;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .digits-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .digits-grid img {
+            width: 100%;
+            height: auto;
+        }
+
+        ul {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .large-image {
+            max-width: 800px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .comparison-table th {
+            background-color: #003262;
+            color: white;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .image-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CS180 Project 5: Diffusion Models</h1>
+            <div class="subtitle">Part A: The Power of Diffusion Models</div>
+            <div class="subtitle">Part B: Diffusion Models from Scratch</div>
+            <div class="subtitle">Fall 2025</div>
+        </header>
+
+        <!-- PART A -->
+        <h2>Part A: The Power of Diffusion Models</h2>
+
+        <div class="section">
+            <h3>Part 0: Setup and Text Prompts</h3>
+            
+            <div class="note">
+                <strong>Random Seed:</strong> 100
+            </div>
+
+            <div class="note">
+                <strong>Prompts:</strong> "an oil painting of a snowy mountain village", "a photo of the amalfi cost", "a photo of a man"
+            </div>
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5a0_4.png" alt="Prompt 1 - 40 steps">
+                    <div class="image-caption">40 inference steps</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5a0_1.png" alt="Prompt 1 - 50 steps">
+                    <div class="image-caption">50 inference steps</div>
+                </div>
+            </div>
+            <p>
+                With 50 steps, the details are sharper and the painting texture is more refined. The 50-step version shows clearer coastal details and better color saturation. Facial features are more coherent with 50 steps.
+            </p>
+        </div>
+
+        <div class="section">
+            <h3>1.1 Implementing the Forward Process</h3>
+            <div class="image-container">
+                <img src="Media/5a1.1.png" alt="Forward process">
+                <div class="image-caption">Forward process</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>1.2 Classical Denoising</h3>
+            <div class="image-container">
+                <img src="Media/5a1.2.png" alt="Classical Denoising">
+                <div class="image-caption">Classical denoising</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>1.3 One-Step Denoising</h3>
+            <div class="image-container">
+                <img src="Media/5a1.3.png" alt="One-Step Denoising">
+                <div class="image-caption">One-Step Denoising</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>1.4 Iterative Denoising</h3>
+            <div class="image-container">
+                <img src="Media/5a1.4.png" alt="Iterative Denoising">
+                <div class="image-caption">Iterative Denoising</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>1.5 Diffusion Model Sampling</h3>
+            <div class="image-container">
+                <img src="Media/5a1.5.png" alt="Diffusion Model Sampling">
+                <div class="image-caption">Diffusion Model Sampling</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>1.6 Classifier-Free Guidance (CFG)</h3>
+            <h4>CFG with different guidance scales</h4>
+            <div class="image-container">
+                <img src="Media/5a1.6.png" alt="Classifier-Free Guidance">
+                <div class="image-caption">Classifier-Free Guidance</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>1.7 Image-to-Image Translation</h3>
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5a1.7_1.png" alt="Original">
+                    <div class="image-caption">Campanile</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5a1.7_2.png" alt="i_start=1">
+                    <div class="image-caption">Self-choice 1</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5a1.7_3.png" alt="i_start=3">
+                    <div class="image-caption">Self-choice 2</div>
+                </div>
+            </div>
+            <h4>1.7.1 SDEdit: Projecting to the Natural Image Manifold</h4>
+            
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5a1.7.1_1.png" alt="Image1">
+                    <div class="image-caption">Image 1</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5a1.7.1_2.png" alt="Image2">
+                    <div class="image-caption">Image 2</div>
+                </div>
+            </div>
+
+            <h4>1.7.2 Inpainting</h4>
+            
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5a1.7.2_2.png" alt="Mask">
+                    <div class="image-caption">Campanile</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5a1.7.2_3.png" alt="Self-choice 1">
+                    <div class="image-caption">Self-choice 1</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5a1.7.2_4.png" alt="Self-choice 2">
+                    <div class="image-caption">Self-choice 2</div>
+                </div>
+            </div>
+
+            <h4>1.7.3 Text-Conditioned Image-to-Image Translation</h4>
+            
+            <div class="note">
+                <strong>Campanile Translation:</strong> "a rocket ship"
+            </div>
+            <div class="image-container">
+                <img src="Media/5a1.7.3_1.png" alt="Classifier-Free Guidance">
+                <div class="image-caption"></div>
+            </div>
+
+            <div class="note">
+                <strong>Custom Image 1:</strong> "a lithograph of a skull"
+            </div>
+            <div class="image-container">
+                <img src="Media/5a1.7.3_2.png" alt="Classifier-Free Guidance">
+                <div class="image-caption"></div>
+            </div>
+
+            <div class="note">
+                <strong>Custom Image 2:</strong> "a lithograph of waterfalls"
+            </div>
+            <div class="image-container">
+                <img src="Media/5a1.7.3_3.png" alt="Classifier-Free Guidance">
+                <div class="image-caption"></div>
+            </div>
+
+        </div>
+
+        <div class="section">
+            <h3>1.8 Visual Anagrams</h3>
+            
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5a1.8_1.png" alt="Anagram normal">
+                    <div class="image-caption">"an oil painting of an old man"&"an oil painting of people around a campfire"</div>
+                </div>
+            </div>
+
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5a1.8_2.png" alt="Anagram 2 normal">
+                    <div class="image-caption">"an oil painting of a snowy mountain village"&"a lithograph of waterfalls"</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>1.9 Hybrid Images</h3>
+            
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5a1.9_1.png" alt="Hybrid 1">
+                    <div class="image-caption">Hybrid 1<br>(Low freq: "an oil painting of an old man", High freq: "an oil painting of people around a campfire")</div>
+                </div>
+            </div>
+
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5a1.9_2.png" alt="Hybrid 2">
+                    <div class="image-caption">Hybrid 2<br>(Low freq: "a lithograph of a skull", High freq: "a lithograph of waterfalls")</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PART B -->
+        <h2>Part B: Diffusion Models from Scratch</h2>
+
+        <div class="section">
+            <h3>Part 1: Training a Single-Step Denoising UNet</h3>
+
+            <h4>1.2 Using the UNet to Train a Denoiser</h4>
+            <div class="image-container">
+                <img src="Media/5b1.2.png" alt="noising process">
+                <div class="image-caption">Noising process</div>
+            </div>            
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5b1.2.1_3.png" alt="Training curve">
+                    <div class="image-caption">Training Loss Curve</div>
+                </div>
+            </div>
+
+            <h4>Results after Epoch 1 and Epoch 5</h4>
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5b1.2.1_1.png" alt="Epoch 1">
+                    <div class="image-caption">Denoising Results - Epoch 1</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b1.2.1_2.png" alt="Epoch 5">
+                    <div class="image-caption">Denoising Results - Epoch 5</div>
+                </div>
+            </div>
+
+            <h4>1.2.2 Out-of-Distribution Testing</h4>
+            
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5b1.2.2_1.png" alt="Noise 0.0">
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b1.2.2_2.png" alt="Noise 0.2">
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b1.2.2_3.png" alt="Noise 0.4">
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b1.2.2_4.png" alt="Epoch 5">
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b1.2.2_5.png" alt="Epoch 5">
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b1.2.2_6.png" alt="Epoch 5">
+                </div>
+            </div>
+
+            <div class="section">
+            <h3>Part 1.2.3: Denoising Pure Noise</h3>
+            
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5b1.2.3_3.png" alt="Training curve pure noise">
+                    <div class="image-caption">Training Loss Curve</div>
+                </div>
+            </div>
+
+            <h4>Results after Epoch 1 and Epoch 5</h4>
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5b1.2.3_1.png" alt="Pure noise Epoch 1">
+                    <div class="image-caption">Denoising Pure Noise - Epoch 1</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b1.2.3_2.png" alt="Pure noise Epoch 5">
+                    <div class="image-caption">Denoising Pure Noise - Epoch 5</div>
+                </div>
+            </div>
+
+            <p>
+                The generated outputs show blurry, averaged digit-like shapes rather than clear individual digits. 
+                This occurs because with MSE loss, the model learns to predict the mean of all training examples. 
+                Since the input is pure noise with no structure, the network outputs something close to the average 
+                of all MNIST digits it was trained on.
+            </p>
+        </div>
+        </div>
+
+        <div class="section">
+            <h3>Part 2: Training a Diffusion Model</h3>
+
+            <h4>2.2 Training the Time-Conditioned UNet</h4>
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5b2.2.png" alt="Training loss">
+                    <div class="image-caption">Training Loss Curve (20 epochs)</div>
+                </div>
+            </div>
+
+            <h4>2.3 Sampling from the Time-Conditioned UNet</h4>
+            
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5b2.3_1.png" alt="Epoch 1">
+                    <div class="image-caption">Epoch 1</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b2.3_2.png" alt="Epoch 5">
+                    <div class="image-caption">Epoch 5</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b2.3_3.png" alt="Epoch 10">
+                    <div class="image-caption">Epoch 10</div>
+                </div>
+            </div>
+            <h4>2.5 Training the UNet</h4>
+            <div class="image-container">
+                <img src="Media/5b2.5.png" alt="Training curve">
+                <div class="image-caption">Training Curve</div>
+            </div>
+
+            <h4>2.6 Sampling from the UNet</h4>
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5b2.6_1.png" alt="Class Epoch 1">
+                    <div class="image-caption">Epoch 1</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b2.6_2.png" alt="Class Epoch 5">
+                    <div class="image-caption">Epoch 5</div>
+                </div>
+                <div class="image-container">
+                    <img src="Media/5b2.6_3.png" alt="Class Epoch 10">
+                    <div class="image-caption">Epoch 10</div>
+                </div>
+            </div>
+
+            <h4>Removing the Learning Rate Scheduler</h4>
+            <p>
+                Successfully maintained model performance after removing the exponential learning rate scheduler by:
+            </p>
+            <ul>
+                <li>Using a constant learning rate of 1e-3 (optimized through experimentation)</li>
+                <li>Increasing the number of training epochs to compensate</li>
+                <li>Adding gradient clipping to prevent instabilities</li>
+            </ul>
+            
+            <div class="image-row">
+                <div class="image-container">
+                    <img src="Media/5b2.6_4.png" alt="No scheduler">
+                    <div class="image-caption">Results without LR scheduler (Epoch 10)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
